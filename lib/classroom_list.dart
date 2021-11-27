@@ -13,7 +13,7 @@ class ClassroomList extends StatefulWidget {
 
   final ClassroomService _service = ClassroomService();
 
-  final List<Classroom> classrooms = [];
+  final Map<int, List<Classroom>> classrooms = {};
 
   void onAddClassroom(Classroom classroom) {
     _service.add(classroom);
@@ -69,13 +69,7 @@ class _ClassroomListState extends State<ClassroomList> {
     return Scaffold(
       body: ListView(
         padding: const EdgeInsets.symmetric(vertical: 8.0),
-        children: widget.classrooms.map((Classroom classroom) {
-          return ClassroomListItem(
-            classroom: classroom,
-            onEditClassroom: _handleEditClassroom,
-            onRemoveClassroom: _handleRemoveClassroom,
-          );
-        }).toList(),
+        children: _buildItems(),
       ),
       floatingActionButton: FloatingActionButton(
           tooltip: 'Add a new classroom',
@@ -88,6 +82,23 @@ class _ClassroomListState extends State<ClassroomList> {
                         )),
               )),
     );
+  }
+
+  List<Widget> _buildItems() {
+    final List<Widget> items = [];
+    for (final entry in widget.classrooms.entries) {
+      items.add(Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 68, vertical: 14),
+          child: Text(entry.key.toString(),
+              style:
+                  const TextStyle(fontWeight: FontWeight.bold, fontSize: 18))));
+      items.addAll(entry.value.map((c) => ClassroomListItem(
+            classroom: c,
+            onEditClassroom: _handleEditClassroom,
+            onRemoveClassroom: _handleRemoveClassroom,
+          )));
+    }
+    return items;
   }
 }
 

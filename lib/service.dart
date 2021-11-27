@@ -7,9 +7,11 @@ class ClassroomService {
     Classroom(id: 'B2', description: 'Second class B', year: 2020),
   ];
 
-  List<Classroom> listAll() {
-    classrooms.sort((a, b) => a.year.compareTo(b.year));
-    return classrooms;
+  Map<int, List<Classroom>> listAll() {
+    final years = classrooms.map((c) => c.year).toSet();
+    return {
+      for (var y in years) y: classrooms.where((c) => c.year == y).toList()
+    };
   }
 
   void add(Classroom classroom) {
