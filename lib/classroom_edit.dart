@@ -23,7 +23,7 @@ class EditClassroomDialog extends StatelessWidget {
           classroom: classroom,
           onEditClassroom: (Classroom oldClassroom, Classroom newClassroom) {
             onEditClassroom(oldClassroom, newClassroom);
-            Navigator.pop(context);
+            Navigator.pop(context, true);
           }),
     );
   }

@@ -74,13 +74,21 @@ class _ClassroomListState extends State<ClassroomList> {
       floatingActionButton: FloatingActionButton(
           tooltip: 'Add a new classroom',
           child: const Icon(Icons.add),
-          onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => AddClassroomDialog(
-                          onAddClassroom: _handleAddClassroom,
-                        )),
-              )),
+          onPressed: () async {
+            final result = await Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => AddClassroomDialog(
+                        onAddClassroom: _handleAddClassroom,
+                      )),
+            );
+            if (result != null && result) {
+              ScaffoldMessenger.of(context)
+                ..removeCurrentSnackBar()
+                ..showSnackBar(
+                    const SnackBar(content: Text('Added successfully.')));
+            }
+          }),
     );
   }
 
@@ -89,7 +97,7 @@ class _ClassroomListState extends State<ClassroomList> {
     for (final entry in widget.classrooms.entries) {
       items.add(Padding(
           padding: const EdgeInsets.symmetric(horizontal: 68, vertical: 14),
-          child: Text(entry.key.toString(),
+          child: Text('${entry.key}/${entry.key + 1}',
               style:
                   const TextStyle(fontWeight: FontWeight.bold, fontSize: 18))));
       items.addAll(entry.value.map((c) => ClassroomListItem(
@@ -125,7 +133,6 @@ class ClassroomListItem extends StatelessWidget {
                 )),
       ),
       leading: CircleAvatar(
-        //backgroundColor: _getColor(context),
         child: Text(classroom.id),
       ),
       trailing: FittedBox(
@@ -134,24 +141,35 @@ class ClassroomListItem extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.edit),
             tooltip: 'Edit this classroom',
-            splashRadius: 10,
-            hoverColor: Colors.yellow[200],
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => EditClassroomDialog(
-                        classroom: classroom,
-                        onEditClassroom: onEditClassroom,
-                      )),
-            ),
+            splashRadius: 20,
+            onPressed: () async {
+              final result = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => EditClassroomDialog(
+                          classroom: classroom,
+                          onEditClassroom: onEditClassroom,
+                        )),
+              );
+              if (result != null && result) {
+                ScaffoldMessenger.of(context)
+                  ..removeCurrentSnackBar()
+                  ..showSnackBar(
+                      const SnackBar(content: Text('Edited successfully.')));
+              }
+            },
           ),
           IconButton(
-            icon: const Icon(Icons.remove_circle_outline),
-            tooltip: 'Remove this classroom',
-            splashRadius: 10,
-            hoverColor: Colors.red[200],
-            onPressed: () => onRemoveClassroom(classroom),
-          ),
+              icon: const Icon(Icons.remove_circle_outline),
+              tooltip: 'Remove this classroom',
+              splashRadius: 20,
+              onPressed: () {
+                onRemoveClassroom(classroom);
+                ScaffoldMessenger.of(context)
+                  ..removeCurrentSnackBar()
+                  ..showSnackBar(
+                      const SnackBar(content: Text('Removed successfully.')));
+              }),
         ]),
       ),
       title: Text(

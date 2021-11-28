@@ -1,4 +1,5 @@
-import 'package:observations/domain.dart';
+import 'package:uuid/uuid.dart';
+import 'domain.dart';
 
 class ClassroomService {
   final classrooms = [
@@ -18,10 +19,6 @@ class ClassroomService {
     classrooms.add(classroom);
   }
 
-  void remove(Classroom classroom) {
-    classrooms.remove(classroom);
-  }
-
   void edit(Classroom oldClassroom, Classroom newClassroom) {
     final i = classrooms.indexOf(oldClassroom);
     if (i != -1) {
@@ -29,19 +26,42 @@ class ClassroomService {
       classrooms.insert(i, newClassroom);
     }
   }
+
+  void remove(Classroom classroom) {
+    classrooms.remove(classroom);
+  }
 }
 
 class StudentService {
+  final students = [
+    Student(id: const Uuid().v4(), givenName: 'Bart', familyName: 'Simpson'),
+    Student(
+        id: const Uuid().v4(), givenName: 'Milhouse', familyName: 'Van Houten'),
+    Student(id: const Uuid().v4(), givenName: 'Martin', familyName: 'Prince'),
+    Student(
+        id: const Uuid().v4(),
+        givenName: 'Nelson',
+        familyName: 'Muntz',
+        mittleName: 'Mandela'),
+  ];
   List<Student> listByClassroom(Classroom classroom) {
-    return [
-      Student(id: 'bs', givenName: 'Bart', familyName: 'Simpson'),
-      Student(id: 'mvh', givenName: 'Milhouse', familyName: 'Van Houten'),
-      Student(id: 'mp', givenName: 'Martin', familyName: 'Prince'),
-      Student(
-          id: 'nmm',
-          givenName: 'Nelson',
-          familyName: 'Muntz',
-          mittleName: 'Mandela'),
-    ];
+    students.sort((a, b) => a.familyName.compareTo(b.familyName));
+    return students;
+  }
+
+  void add(Student student) {
+    students.add(student);
+  }
+
+  void edit(Student oldStudent, Student newStudent) {
+    final i = students.indexOf(oldStudent);
+    if (i != -1) {
+      students.remove(oldStudent);
+      students.insert(i, newStudent);
+    }
+  }
+
+  void remove(Student student) {
+    students.remove(student);
   }
 }

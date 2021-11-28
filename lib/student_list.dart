@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'service.dart';
 import 'domain.dart';
-import 'classroom_add.dart';
+import 'student_add.dart';
+import 'student_edit.dart';
 
 typedef ListStudents = List<Student> Function();
 typedef RemoveStudent = Function(Student student);
-typedef EditStudent = Function(Student student);
+typedef EditStudent = Function(Student oldStudent, Student newStudent);
 
 class StudentList extends StatefulWidget {
   StudentList({required this.classroom, Key? key}) : super(key: key);
@@ -17,18 +18,19 @@ class StudentList extends StatefulWidget {
   final List<Student> students = [];
 
   void onAddStudent(Student student) {
-    //_service.add(classroom);
+    _service.add(student);
   }
 
-  void onEditClassroom(Student student) {
-    //_service.edit(classroom);
+  void onEditStudent(Student oldStudent, Student newStudent) {
+    _service.edit(oldStudent, newStudent);
   }
 
-  void onRemoveClassroom(Student student) {
-    //_service.remove(classroom);
+  void onRemoveStudent(Student student) {
+    _service.remove(student);
   }
 
   void loadStudents() {
+    students.clear();
     students.addAll(_service.listByClassroom(classroom));
   }
 
@@ -39,22 +41,22 @@ class StudentList extends StatefulWidget {
 class _StudentListState extends State<StudentList> {
   void _handleAddStudent(Student student) {
     setState(() {
-      widget.students.add(student);
       widget.onAddStudent(student);
+      widget.loadStudents();
     });
   }
 
-  void _handleRemoveClassroom(Student student) {
+  void _handleRemoveStudent(Student student) {
     setState(() {
-      widget.students.remove(student);
-      widget.onRemoveClassroom(student);
+      widget.onRemoveStudent(student);
+      widget.loadStudents();
     });
   }
 
-  void _handleEditClassroom(Student student) {
+  void _handleEditStudent(Student newStudent, Student oldStudent) {
     setState(() {
-      // TODO
-      widget.onEditClassroom(student);
+      widget.onEditStudent(newStudent, oldStudent);
+      widget.loadStudents();
     });
   }
 
@@ -68,28 +70,39 @@ class _StudentListState extends State<StudentList> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Class TODO Class Name'),
+        title: Text(widget.classroom.id +
+            (widget.classroom.description.isNotEmpty
+                ? ' | ${widget.classroom.description}'
+                : '')),
       ),
       body: ListView(
         padding: const EdgeInsets.symmetric(vertical: 8.0),
         children: widget.students.map((Student student) {
           return StudentListItem(
             student: student,
-            onEditClassroom: _handleEditClassroom,
-            onRemoveClassroom: _handleRemoveClassroom,
+            onEditStudent: _handleEditStudent,
+            onRemoveStudent: _handleRemoveStudent,
           );
         }).toList(),
       ),
-      // floatingActionButton: FloatingActionButton(
-      //     tooltip: 'Add a new student',
-      //     child: const Icon(Icons.add),
-      //     onPressed: () => Navigator.push(
-      //           context,
-      //           MaterialPageRoute(
-      //               builder: (context) => AddClassroomDialog(
-      //                     onAddClassroom: _handleAddStudent,
-      //                   )),
-      //         )),
+      floatingActionButton: FloatingActionButton(
+          tooltip: 'Add a new student',
+          child: const Icon(Icons.add),
+          onPressed: () async {
+            final result = await Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => AddStudentDialog(
+                        onAddStudent: _handleAddStudent,
+                      )),
+            );
+            if (result != null && result) {
+              ScaffoldMessenger.of(context)
+                ..removeCurrentSnackBar()
+                ..showSnackBar(
+                    const SnackBar(content: Text('Added successfully.')));
+            }
+          }),
     );
   }
 }
@@ -97,14 +110,14 @@ class _StudentListState extends State<StudentList> {
 class StudentListItem extends StatelessWidget {
   StudentListItem(
       {required this.student,
-      required this.onEditClassroom,
-      required this.onRemoveClassroom})
+      required this.onEditStudent,
+      required this.onRemoveStudent})
       : super(key: ObjectKey(student));
 
   final Student student;
 
-  final EditStudent onEditClassroom;
-  final RemoveStudent onRemoveClassroom;
+  final EditStudent onEditStudent;
+  final RemoveStudent onRemoveStudent;
 
   @override
   Widget build(BuildContext context) {
@@ -112,35 +125,51 @@ class StudentListItem extends StatelessWidget {
       // onTap: () => Navigator.push(
       //   context,
       //   MaterialPageRoute(
-      //       builder: (context) => AddClassroomDialog(
-      //             onAddClassroom: _handleAddClassroom,
+      //       builder: (context) => ObservationList(
+      //             student: student,
       //           )),
       // ),
       leading: const CircleAvatar(
-        //backgroundColor: _getColor(context),
         child: Icon(Icons.face),
       ),
       trailing: FittedBox(
         fit: BoxFit.fill,
         child: Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
           IconButton(
-            icon: const Icon(Icons.edit),
-            tooltip: 'Edit this student',
-            splashRadius: 10,
-            hoverColor: Colors.yellow[200],
-            onPressed: () => onEditClassroom(student),
-          ),
+              icon: const Icon(Icons.edit),
+              tooltip: 'Edit this student',
+              splashRadius: 20,
+              onPressed: () async {
+                final result = await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => EditStudentDialog(
+                            student: student,
+                            onEditStudent: onEditStudent,
+                          )),
+                );
+                if (result != null && result) {
+                  ScaffoldMessenger.of(context)
+                    ..removeCurrentSnackBar()
+                    ..showSnackBar(
+                        const SnackBar(content: Text('Edited successfully.')));
+                }
+              }),
           IconButton(
-            icon: const Icon(Icons.remove_circle_outline),
-            tooltip: 'Remove this student',
-            splashRadius: 10,
-            hoverColor: Colors.red[200],
-            onPressed: () => onRemoveClassroom(student),
-          ),
+              icon: const Icon(Icons.remove_circle_outline),
+              tooltip: 'Remove this student',
+              splashRadius: 20,
+              onPressed: () {
+                onRemoveStudent(student);
+                ScaffoldMessenger.of(context)
+                  ..removeCurrentSnackBar()
+                  ..showSnackBar(
+                      const SnackBar(content: Text('Removed successfully.')));
+              }),
         ]),
       ),
       title: Text(
-        student.givenName + ' ' + student.familyName,
+        '${student.familyName}, ${student.givenName}',
       ),
     );
   }

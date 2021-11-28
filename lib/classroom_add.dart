@@ -18,7 +18,7 @@ class AddClassroomDialog extends StatelessWidget {
       ),
       body: AddClassroomForm(onAddClassroom: (Classroom classroom) {
         onAddClassroom(classroom);
-        Navigator.pop(context);
+        Navigator.pop(context, true);
       }),
     );
   }

@@ -20,8 +20,8 @@ class HomePage extends StatelessWidget {
         appBar: AppBar(
           title: const Text('Student Observations'),
           leading: const IconButton(
-            icon: Icon(Icons.menu),
-            tooltip: 'Navigation menu',
+            icon: Icon(Icons.settings),
+            tooltip: 'Settings',
             onPressed: null,
           ),
           actions: [
