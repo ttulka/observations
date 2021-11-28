@@ -3,6 +3,7 @@ import 'service.dart';
 import 'domain.dart';
 import 'student_add.dart';
 import 'student_edit.dart';
+import 'observation_list.dart';
 
 typedef ListStudents = List<Student> Function();
 typedef RemoveStudent = Function(Student student);
@@ -122,13 +123,13 @@ class StudentListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      // onTap: () => Navigator.push(
-      //   context,
-      //   MaterialPageRoute(
-      //       builder: (context) => ObservationList(
-      //             student: student,
-      //           )),
-      // ),
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => ObservationList(
+                  student: student,
+                )),
+      ),
       leading: const CircleAvatar(
         child: Icon(Icons.face),
       ),

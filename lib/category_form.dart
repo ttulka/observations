@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_quill/flutter_quill.dart' as quill;
 
 class CategoryForm {
   const CategoryForm(
@@ -7,35 +8,37 @@ class CategoryForm {
       required this.onSave});
 
   final TextEditingController nameController;
-  final TextEditingController templateController;
+  final quill.QuillController templateController;
 
   final Function onSave;
 
   Widget build(BuildContext context, GlobalKey<FormState> formKey) {
-    return Form(
-      key: formKey,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            newTextField('Name', nameController, true, 50),
-            newTextAreaField('Template', templateController, 1000),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              child: ElevatedButton(
-                onPressed: () {
-                  if (formKey.currentState!.validate()) {
-                    onSave();
-                  }
-                },
-                child: const Text('Save'),
-              ),
-            ),
-          ],
+    return Column(children: [
+      Form(
+        key: formKey,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              newTextField('Name', nameController, true, 50),
+            ],
+          ),
         ),
       ),
-    );
+      Expanded(child: newTextAreaField(templateController, 1000)),
+      Padding(
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        child: ElevatedButton(
+          onPressed: () {
+            if (formKey.currentState!.validate()) {
+              onSave();
+            }
+          },
+          child: const Text('Save'),
+        ),
+      )
+    ]);
   }
 
   Widget newTextField(String label, TextEditingController controller,
@@ -63,19 +66,24 @@ class CategoryForm {
     );
   }
 
-  Widget newTextAreaField(
-      String label, TextEditingController controller, int maxLength) {
+  Widget newTextAreaField(quill.QuillController controller, int maxLength) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 16),
-      child: TextFormField(
-        minLines: 20,
-        maxLines: 100,
-        controller: controller,
-        decoration: InputDecoration(
-          border: const UnderlineInputBorder(),
-          labelText: label,
-        ),
-        maxLength: maxLength,
+      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+      child: Column(
+        children: [
+          quill.QuillToolbar.basic(
+              controller: controller,
+              showImageButton: false,
+              showVideoButton: false),
+          Expanded(
+            child: Container(
+              child: quill.QuillEditor.basic(
+                controller: controller,
+                readOnly: false, // true for view only mode
+              ),
+            ),
+          )
+        ],
       ),
     );
   }

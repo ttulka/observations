@@ -25,3 +25,18 @@ class Category {
   final String name;
   final String template;
 }
+
+class Observation {
+  Observation(
+      {required this.id,
+      required this.category,
+      required this.date,
+      required this.updatedAt,
+      required this.content});
+
+  final String id;
+  final Category category;
+  final DateTime date;
+  final DateTime updatedAt;
+  final String content;
+}

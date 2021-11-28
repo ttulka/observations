@@ -66,15 +66,17 @@ class StudentService {
   }
 }
 
+final category1 = Category(
+    name: 'Social behavior',
+    template:
+        r'[{"insert":"Title 1"},{"insert":"\n","attributes":{"header":1}},{"insert":"\n\n\nTitle 2"},{"insert":"\n","attributes":{"header":1}},{"insert":"\n\n\nTitle 3"},{"insert":"\n","attributes":{"header":1}}]');
+final category2 = Category(
+    name: 'Work behavior',
+    template:
+        r'[{"insert":"Title 1"},{"insert":"\n","attributes":{"header":1}},{"insert":"\n\n\nTitle 2"},{"insert":"\n","attributes":{"header":1}},{"insert":"\n\n\nTitle 3"},{"insert":"\n","attributes":{"header":1}}]');
+
 class CategoryService {
-  final categories = [
-    Category(
-        name: 'Social behavior',
-        template: '## Subtitle 1\n\n## Subtitle 2\n\n## Subtitle 3'),
-    Category(
-        name: 'Work behavior',
-        template: '## Subtitle 1\n\n## Subtitle 2\n\n## Subtitle 3')
-  ];
+  final categories = [category1, category2];
 
   List<Category> listAll() {
     return categories;
@@ -95,4 +97,54 @@ class CategoryService {
   void remove(Category category) {
     categories.remove(category);
   }
+}
+
+class ObservationService {
+  final observations = [
+    Observation(
+        id: const Uuid().v4(),
+        category: category1,
+        date: DateTime(2021, 1, 1),
+        updatedAt: DateTime.now(),
+        content:
+            '[{"insert":"Title 1"},{"insert":"\n","attributes":{"header":1}},{"insert":"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n"}]'),
+    Observation(
+        id: const Uuid().v4(),
+        category: category2,
+        date: DateTime(2021, 1, 1),
+        updatedAt: DateTime.now(),
+        content:
+            '[{"insert":"Title 1"},{"insert":"\n","attributes":{"header":1}},{"insert":"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n"}]'),
+  ];
+
+  Map<DateTime, List<Observation>> listByStudent(Student student) {
+    final dates = observations.map((c) => c.date).toSet();
+    return {
+      for (var d in dates)
+        d: observations.where((o) => datesEqual(o.date, d)).toList()
+    };
+  }
+
+  void add(Observation observation) {
+    observations.add(observation);
+  }
+
+  void edit(Observation oldObservation, Observation newObservation) {
+    final i = observations.indexOf(oldObservation);
+    if (i != -1) {
+      observations.remove(oldObservation);
+      observations.insert(i, newObservation);
+    }
+  }
+
+  void remove(Observation observation) {
+    observations.remove(observation);
+  }
+
+  void removeByDate(DateTime date) {
+    observations.removeWhere((o) => datesEqual(o.date, date));
+  }
+
+  bool datesEqual(DateTime d1, DateTime d2) =>
+      d1.year == d2.year && d1.month == d2.month && d1.day == d2.day;
 }

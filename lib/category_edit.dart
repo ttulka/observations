@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_quill/flutter_quill.dart' as quill;
 import 'category_form.dart';
 import 'domain.dart';
 
@@ -44,7 +47,7 @@ class EditCategoryFormState extends State<EditCategoryForm> {
   final _formKey = GlobalKey<FormState>();
 
   final nameController = TextEditingController();
-  final templateController = TextEditingController();
+  late quill.QuillController templateController;
 
   @override
   void dispose() {
@@ -57,7 +60,9 @@ class EditCategoryFormState extends State<EditCategoryForm> {
   void initState() {
     super.initState();
     nameController.text = widget.category.name;
-    templateController.text = widget.category.template;
+    templateController = quill.QuillController(
+        document: quill.Document.fromJson(jsonDecode(widget.category.template)),
+        selection: const TextSelection.collapsed(offset: 0));
   }
 
   @override
@@ -66,8 +71,10 @@ class EditCategoryFormState extends State<EditCategoryForm> {
         nameController: nameController,
         templateController: templateController,
         onSave: () {
-          final newCategory = Category(
-              name: nameController.text, template: templateController.text);
+          final template =
+              jsonEncode(templateController.document.toDelta().toJson());
+          final newCategory =
+              Category(name: nameController.text, template: template);
           widget.onEditCategory(widget.category, newCategory);
         }).build(context, _formKey);
   }
