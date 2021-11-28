@@ -9,3 +9,4 @@
 - searching (filtering) students
 - icon to the desktop app
 - export/import
+- sorting category (up, down)

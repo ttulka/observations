@@ -65,3 +65,34 @@ class StudentService {
     students.remove(student);
   }
 }
+
+class CategoryService {
+  final categories = [
+    Category(
+        name: 'Social behavior',
+        template: '## Subtitle 1\n\n## Subtitle 2\n\n## Subtitle 3'),
+    Category(
+        name: 'Work behavior',
+        template: '## Subtitle 1\n\n## Subtitle 2\n\n## Subtitle 3')
+  ];
+
+  List<Category> listAll() {
+    return categories;
+  }
+
+  void add(Category category) {
+    categories.add(category);
+  }
+
+  void edit(Category oldCategory, Category newCategory) {
+    final i = categories.indexOf(oldCategory);
+    if (i != -1) {
+      categories.remove(oldCategory);
+      categories.insert(i, newCategory);
+    }
+  }
+
+  void remove(Category category) {
+    categories.remove(category);
+  }
+}

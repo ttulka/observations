@@ -18,3 +18,10 @@ class Student {
   final String familyName;
   final String? mittleName;
 }
+
+class Category {
+  Category({required this.name, required this.template});
+
+  final String name;
+  final String template;
+}
