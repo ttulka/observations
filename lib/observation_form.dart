@@ -1,15 +1,29 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart' as quill;
+import 'package:intl/intl.dart';
+import 'domain.dart';
 
 class ObservationForm {
-  const ObservationForm({required this.dateController, required this.templateController, required this.onSave});
+  ObservationForm({required this.intialDate, required this.observations, required this.onSave});
 
-  final TextEditingController dateController;
-  final quill.QuillController templateController;
+  final DateTime intialDate;
+  final List<Observation> observations;
 
-  final Function onSave;
+  final Function(Observation) onSave;
 
-  Widget build(BuildContext context, GlobalKey<FormState> formKey) {
+  final dateController = TextEditingController();
+  final Map<String, quill.QuillController> templateControllers = {};
+
+  dispose() {
+    dateController.dispose();
+    templateControllers.values.forEach((c) => c.dispose());
+  }
+
+  Widget build(BuildContext context, Function onFinish) {
+    final formKey = GlobalKey<FormState>();
+    dateController.text = DateFormat('dd/MM/yyyy').format(intialDate);
     return Column(children: [
       Form(
         key: formKey,
@@ -18,29 +32,53 @@ class ObservationForm {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              newDateField(context, 'Date (dd/mm/yyyy)', dateController, true, 50),
+              _newDateField(context, 'Date (dd/mm/yyyy)', dateController, true, 50),
             ],
           ),
         ),
       ),
-      Expanded(child: newTextAreaField(templateController, 1000)),
+      Expanded(
+        child: TabBarView(
+          children: observations.map((o) {
+            final tc = quill.QuillController(
+                document: quill.Document.fromJson(jsonDecode(o.content)),
+                selection: const TextSelection.collapsed(offset: 0));
+            templateControllers[o.id] = tc;
+            return _newTextAreaField(tc, 1000);
+          }).toList(),
+        ),
+      ),
       Padding(
         padding: const EdgeInsets.symmetric(vertical: 16),
         child: ElevatedButton(
-          onPressed: () {
-            if (formKey.currentState!.validate()) {
-              onSave();
-            }
-          },
           child: const Text('Save'),
+          onPressed: () {
+            if (!formKey.currentState!.validate()) {
+              ScaffoldMessenger.of(context)
+                ..removeCurrentSnackBar()
+                ..showSnackBar(const SnackBar(content: Text('Some observation is invalid. Please check all tabs.')));
+              return;
+            }
+            final date = DateFormat('dd/MM/yyyy').parse(dateController.text);
+            for (Observation o in observations) {
+              final tc = templateControllers[o.id];
+              if (tc != null) {
+                final content = jsonEncode(tc.document.toDelta().toJson());
+                final observation = Observation(
+                    id: o.id, category: o.category, date: date, updatedAt: DateTime.now(), content: content);
+                onSave(observation);
+              }
+            }
+            onFinish();
+          },
         ),
-      )
+      ),
     ]);
   }
 
-  Widget newDateField(
-      BuildContext context, String label, TextEditingController controller, bool required, int maxLength,
-      {RegExp? filter}) {
+  Widget _newDateField(
+      BuildContext context, String label, TextEditingController controller, bool required, int maxLength) {
+    final filter = RegExp(r"\d\d/\d\d/\d\d\d\d");
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 16),
       child: TextFormField(
@@ -54,7 +92,7 @@ class ObservationForm {
           if (required && (value == null || value.isEmpty)) {
             return 'Required';
           }
-          if (filter != null && value != null && !filter.hasMatch(value)) {
+          if (value != null && !filter.hasMatch(value)) {
             return 'Invalid value';
           }
           return null;
@@ -71,12 +109,12 @@ class ObservationForm {
         firstDate: DateTime(initialDate.year - 1, initialDate.month),
         lastDate: initialDate);
     if (picked != null) {
-      var date = "${picked.toLocal().day}/${picked.toLocal().month}/${picked.toLocal().year}";
+      var date = DateFormat('dd/MM/yyyy').format(picked);
       dateController.text = date;
     }
   }
 
-  Widget newTextAreaField(quill.QuillController controller, int maxLength) {
+  Widget _newTextAreaField(quill.QuillController controller, int maxLength) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
       child: Column(

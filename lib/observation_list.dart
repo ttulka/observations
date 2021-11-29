@@ -3,11 +3,11 @@ import 'package:intl/intl.dart';
 import 'service.dart';
 import 'domain.dart';
 import 'observation_add.dart';
-// import 'observation_edit.dart';
+import 'observation_edit.dart';
 
 typedef ListObservations = List<Observation> Function();
 typedef RemoveObservation = Function(DateTime date);
-typedef EditObservation = Function(Observation oldObservation, Observation newObservation);
+typedef EditObservation = Function(Observation observation);
 
 class ObservationList extends StatefulWidget {
   ObservationList({required this.student, Key? key}) : super(key: key);
@@ -22,8 +22,8 @@ class ObservationList extends StatefulWidget {
     _service.add(observation);
   }
 
-  void onEditObservation(Observation oldObservation, Observation newObservation) {
-    _service.edit(oldObservation, newObservation);
+  void onEditObservation(Observation observation) {
+    _service.edit(observation);
   }
 
   void onRemoveObservation(DateTime date) {
@@ -54,9 +54,9 @@ class _ObservationListState extends State<ObservationList> {
     });
   }
 
-  void _handleEditObservation(Observation newObservation, Observation oldObservation) {
+  void _handleEditObservation(Observation observation) {
     setState(() {
-      widget.onEditObservation(newObservation, oldObservation);
+      widget.onEditObservation(observation);
       widget.loadObservations();
     });
   }
@@ -123,13 +123,23 @@ class ObservationListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final editAction = () async {
+      final result = await Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => EditObservationDialog(
+                  observations: observations,
+                  onEditObservation: onEditObservation,
+                )),
+      );
+      if (result != null && result) {
+        ScaffoldMessenger.of(context)
+          ..removeCurrentSnackBar()
+          ..showSnackBar(const SnackBar(content: Text('Edited successfully.')));
+      }
+    };
     return ListTile(
-      // onTap: () => Navigator.push(
-      //   context,
-      //   MaterialPageRoute(
-      //       builder: (context) =>
-      //           ObservationDetail(date: date, observations: observations)),
-      // ),
+      onTap: editAction,
       leading: const CircleAvatar(
         child: Icon(Icons.assignment),
       ),
@@ -137,26 +147,7 @@ class ObservationListItem extends StatelessWidget {
         fit: BoxFit.fill,
         child: Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
           IconButton(
-              icon: const Icon(Icons.edit),
-              tooltip: 'Edit this observation',
-              splashRadius: 20,
-              onPressed: () async {
-                // final result = await Navigator.push(
-                //   context,
-                //   MaterialPageRoute(
-                //       builder: (context) => EditObservationDialog(
-                //             date: date,
-                //             observations: observations,
-                //             onEditObservation: onEditObservation,
-                //           )),
-                // );
-                // if (result != null && result) {
-                //   ScaffoldMessenger.of(context)
-                //     ..removeCurrentSnackBar()
-                //     ..showSnackBar(
-                //         const SnackBar(content: Text('Edited successfully.')));
-                // }
-              }),
+              icon: const Icon(Icons.edit), tooltip: 'Edit this observation', splashRadius: 20, onPressed: editAction),
           IconButton(
               icon: const Icon(Icons.remove_circle_outline),
               tooltip: 'Remove this observation',

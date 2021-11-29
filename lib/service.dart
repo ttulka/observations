@@ -66,7 +66,7 @@ final category1 = Category(
 final category2 = Category(
     name: 'Work behavior',
     template:
-        r'[{"insert":"Title 1"},{"insert":"\n","attributes":{"header":1}},{"insert":"\n\n\nTitle 2"},{"insert":"\n","attributes":{"header":1}},{"insert":"\n\n\nTitle 3"},{"insert":"\n","attributes":{"header":1}}]');
+        r'[{"insert":"Title A"},{"insert":"\n","attributes":{"header":1}},{"insert":"\n\n\nTitle B"},{"insert":"\n","attributes":{"header":1}},{"insert":"\n\n\nTitle C"},{"insert":"\n","attributes":{"header":1}}]');
 
 class CategoryService {
   final categories = [category1, category2];
@@ -108,14 +108,14 @@ class ObservationService {
         date: DateTime(2021, 1, 1),
         updatedAt: DateTime.now(),
         content:
-            '[{"insert":"Title 1"},{"insert":"\n","attributes":{"header":1}},{"insert":"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n"}]'),
+            r'[{"insert":"Title 1"},{"insert":"\n","attributes":{"header":1}},{"insert":"\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n"}]'),
     Observation(
         id: const Uuid().v4(),
         category: category2,
         date: DateTime(2021, 1, 1),
         updatedAt: DateTime.now(),
         content:
-            '[{"insert":"Title 1"},{"insert":"\n","attributes":{"header":1}},{"insert":"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n"}]'),
+            r'[{"insert":"Title 1"},{"insert":"\n","attributes":{"header":1}},{"insert":"\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n"}]'),
   ];
 
   Map<DateTime, List<Observation>> listByStudent(Student student) {
@@ -127,11 +127,11 @@ class ObservationService {
     observations.add(observation);
   }
 
-  void edit(Observation oldObservation, Observation newObservation) {
-    final i = observations.indexOf(oldObservation);
+  void edit(Observation observation) {
+    final i = observations.indexWhere((o) => o.id == observation.id);
     if (i != -1) {
-      observations.remove(oldObservation);
-      observations.insert(i, newObservation);
+      observations.removeAt(i);
+      observations.insert(i, observation);
     }
   }
 
