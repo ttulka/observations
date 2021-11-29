@@ -7,6 +7,8 @@ import 'category_edit.dart';
 typedef ListCategories = List<Category> Function();
 typedef RemoveCategory = Function(Category category);
 typedef EditCategory = Function(Category oldCategory, Category newCategory);
+typedef UpCategory = Function(Category category);
+typedef DownCategory = Function(Category category);
 
 class CategoryList extends StatefulWidget {
   CategoryList({Key? key}) : super(key: key);
@@ -27,6 +29,14 @@ class CategoryList extends StatefulWidget {
     _service.remove(category);
   }
 
+  void onUpCategory(Category category) {
+    _service.up(category);
+  }
+
+  void onDownCategory(Category category) {
+    _service.down(category);
+  }
+
   void loadCategories() {
     categories.clear();
     categories.addAll(_service.listAll());
@@ -44,6 +54,13 @@ class _CategoryListState extends State<CategoryList> {
     });
   }
 
+  void _handleEditCategory(Category newCategory, Category oldCategory) {
+    setState(() {
+      widget.onEditCategory(newCategory, oldCategory);
+      widget.loadCategories();
+    });
+  }
+
   void _handleRemoveCategory(Category category) {
     setState(() {
       widget.onRemoveCategory(category);
@@ -51,9 +68,16 @@ class _CategoryListState extends State<CategoryList> {
     });
   }
 
-  void _handleEditCategory(Category newCategory, Category oldCategory) {
+  void _handleUpCategory(Category category) {
     setState(() {
-      widget.onEditCategory(newCategory, oldCategory);
+      widget.onUpCategory(category);
+      widget.loadCategories();
+    });
+  }
+
+  void _handleDownCategory(Category category) {
+    setState(() {
+      widget.onDownCategory(category);
       widget.loadCategories();
     });
   }
@@ -77,6 +101,8 @@ class _CategoryListState extends State<CategoryList> {
             category: category,
             onEditCategory: _handleEditCategory,
             onRemoveCategory: _handleRemoveCategory,
+            onUpCategory: _handleUpCategory,
+            onDownCategory: _handleDownCategory,
           );
         }).toList(),
       ),
@@ -94,8 +120,7 @@ class _CategoryListState extends State<CategoryList> {
             if (result != null && result) {
               ScaffoldMessenger.of(context)
                 ..removeCurrentSnackBar()
-                ..showSnackBar(
-                    const SnackBar(content: Text('Added successfully.')));
+                ..showSnackBar(const SnackBar(content: Text('Added successfully.')));
             }
           }),
     );
@@ -106,13 +131,17 @@ class CategoryListItem extends StatelessWidget {
   CategoryListItem(
       {required this.category,
       required this.onEditCategory,
-      required this.onRemoveCategory})
+      required this.onRemoveCategory,
+      required this.onUpCategory,
+      required this.onDownCategory})
       : super(key: ObjectKey(category));
 
   final Category category;
 
   final EditCategory onEditCategory;
   final RemoveCategory onRemoveCategory;
+  final UpCategory onUpCategory;
+  final DownCategory onDownCategory;
 
   @override
   Widget build(BuildContext context) {
@@ -123,6 +152,16 @@ class CategoryListItem extends StatelessWidget {
       trailing: FittedBox(
         fit: BoxFit.fill,
         child: Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+          IconButton(
+              icon: const Icon(Icons.arrow_upward),
+              tooltip: 'Up',
+              splashRadius: 20,
+              onPressed: () => onUpCategory(category)),
+          IconButton(
+              icon: const Icon(Icons.arrow_downward),
+              tooltip: 'Down',
+              splashRadius: 20,
+              onPressed: () => onDownCategory(category)),
           IconButton(
               icon: const Icon(Icons.edit),
               tooltip: 'Edit this category',
@@ -139,8 +178,7 @@ class CategoryListItem extends StatelessWidget {
                 if (result != null && result) {
                   ScaffoldMessenger.of(context)
                     ..removeCurrentSnackBar()
-                    ..showSnackBar(
-                        const SnackBar(content: Text('Edited successfully.')));
+                    ..showSnackBar(const SnackBar(content: Text('Edited successfully.')));
                 }
               }),
           IconButton(
@@ -151,8 +189,7 @@ class CategoryListItem extends StatelessWidget {
                 onRemoveCategory(category);
                 ScaffoldMessenger.of(context)
                   ..removeCurrentSnackBar()
-                  ..showSnackBar(
-                      const SnackBar(content: Text('Removed successfully.')));
+                  ..showSnackBar(const SnackBar(content: Text('Removed successfully.')));
               }),
         ]),
       ),

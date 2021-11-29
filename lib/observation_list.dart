@@ -2,13 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'service.dart';
 import 'domain.dart';
-// import 'observation_add.dart';
+import 'observation_add.dart';
 // import 'observation_edit.dart';
 
 typedef ListObservations = List<Observation> Function();
 typedef RemoveObservation = Function(DateTime date);
-typedef EditObservation = Function(
-    Observation oldObservation, Observation newObservation);
+typedef EditObservation = Function(Observation oldObservation, Observation newObservation);
 
 class ObservationList extends StatefulWidget {
   ObservationList({required this.student, Key? key}) : super(key: key);
@@ -23,8 +22,7 @@ class ObservationList extends StatefulWidget {
     _service.add(observation);
   }
 
-  void onEditObservation(
-      Observation oldObservation, Observation newObservation) {
+  void onEditObservation(Observation oldObservation, Observation newObservation) {
     _service.edit(oldObservation, newObservation);
   }
 
@@ -56,8 +54,7 @@ class _ObservationListState extends State<ObservationList> {
     });
   }
 
-  void _handleEditObservation(
-      Observation newObservation, Observation oldObservation) {
+  void _handleEditObservation(Observation newObservation, Observation oldObservation) {
     setState(() {
       widget.onEditObservation(newObservation, oldObservation);
       widget.loadObservations();
@@ -74,8 +71,7 @@ class _ObservationListState extends State<ObservationList> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title:
-            Text('${widget.student.familyName}, ${widget.student.givenName}'),
+        title: Text('${widget.student.familyName}, ${widget.student.givenName}'),
       ),
       body: ListView(
         padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -92,19 +88,18 @@ class _ObservationListState extends State<ObservationList> {
           tooltip: 'Add a new observation',
           child: const Icon(Icons.add),
           onPressed: () async {
-            // final result = await Navigator.push(
-            //   context,
-            //   MaterialPageRoute(
-            //       builder: (context) => AddObservationDialog(
-            //             onAddObservation: _handleAddObservation,
-            //           )),
-            // );
-            // if (result != null && result) {
-            //   ScaffoldMessenger.of(context)
-            //     ..removeCurrentSnackBar()
-            //     ..showSnackBar(
-            //         const SnackBar(content: Text('Added successfully.')));
-            // }
+            final result = await Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => AddObservationDialog(
+                        onAddObservation: _handleAddObservation,
+                      )),
+            );
+            if (result != null && result) {
+              ScaffoldMessenger.of(context)
+                ..removeCurrentSnackBar()
+                ..showSnackBar(const SnackBar(content: Text('Added successfully.')));
+            }
           }),
     );
   }
@@ -124,7 +119,7 @@ class ObservationListItem extends StatelessWidget {
   final EditObservation onEditObservation;
   final RemoveObservation onRemoveObservation;
 
-  final _formatter = DateFormat('yyyy-MM-dd');
+  final _formatter = DateFormat('dd/MM/yyyy');
 
   @override
   Widget build(BuildContext context) {
@@ -170,8 +165,7 @@ class ObservationListItem extends StatelessWidget {
                 onRemoveObservation(date);
                 ScaffoldMessenger.of(context)
                   ..removeCurrentSnackBar()
-                  ..showSnackBar(
-                      const SnackBar(content: Text('Removed successfully.')));
+                  ..showSnackBar(const SnackBar(content: Text('Removed successfully.')));
               }),
         ]),
       ),

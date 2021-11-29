@@ -10,9 +10,7 @@ class ClassroomService {
 
   Map<int, List<Classroom>> listAll() {
     final years = classrooms.map((c) => c.year).toSet();
-    return {
-      for (var y in years) y: classrooms.where((c) => c.year == y).toList()
-    };
+    return {for (var y in years) y: classrooms.where((c) => c.year == y).toList()};
   }
 
   void add(Classroom classroom) {
@@ -35,14 +33,9 @@ class ClassroomService {
 class StudentService {
   final students = [
     Student(id: const Uuid().v4(), givenName: 'Bart', familyName: 'Simpson'),
-    Student(
-        id: const Uuid().v4(), givenName: 'Milhouse', familyName: 'Van Houten'),
+    Student(id: const Uuid().v4(), givenName: 'Milhouse', familyName: 'Van Houten'),
     Student(id: const Uuid().v4(), givenName: 'Martin', familyName: 'Prince'),
-    Student(
-        id: const Uuid().v4(),
-        givenName: 'Nelson',
-        familyName: 'Muntz',
-        mittleName: 'Mandela'),
+    Student(id: const Uuid().v4(), givenName: 'Nelson', familyName: 'Muntz', mittleName: 'Mandela'),
   ];
   List<Student> listByClassroom(Classroom classroom) {
     students.sort((a, b) => a.familyName.compareTo(b.familyName));
@@ -97,6 +90,14 @@ class CategoryService {
   void remove(Category category) {
     categories.remove(category);
   }
+
+  void up(Category category) {
+    //TODO
+  }
+
+  void down(Category category) {
+    //TODO
+  }
 }
 
 class ObservationService {
@@ -119,10 +120,7 @@ class ObservationService {
 
   Map<DateTime, List<Observation>> listByStudent(Student student) {
     final dates = observations.map((c) => c.date).toSet();
-    return {
-      for (var d in dates)
-        d: observations.where((o) => datesEqual(o.date, d)).toList()
-    };
+    return {for (var d in dates) d: observations.where((o) => datesEqual(o.date, d)).toList()};
   }
 
   void add(Observation observation) {
@@ -145,6 +143,5 @@ class ObservationService {
     observations.removeWhere((o) => datesEqual(o.date, date));
   }
 
-  bool datesEqual(DateTime d1, DateTime d2) =>
-      d1.year == d2.year && d1.month == d2.month && d1.day == d2.day;
+  bool datesEqual(DateTime d1, DateTime d2) => d1.year == d2.year && d1.month == d2.month && d1.day == d2.day;
 }

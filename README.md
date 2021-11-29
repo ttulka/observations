@@ -1,12 +1,13 @@
 # Student Observations
 
 ## TODO
-- school year to the classroom
+- ordering categories (up, down)
 - validate unique values (classroom ID + year, student ID, etc)
 - storing documents as files
 - saving documents automatically
 - printing documents
+- exporting observations as PDF
 - searching (filtering) students
 - icon to the desktop app
-- export/import
-- sorting category (up, down)
+- backup/restore
+- sentiment of observation (???)
