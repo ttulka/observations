@@ -69,16 +69,18 @@ class _ObservationListState extends State<ObservationList> {
 
   @override
   Widget build(BuildContext context) {
+    final dates = widget.observations.keys.toList();
+    dates.sort((a, b) => b.compareTo(a));
     return Scaffold(
       appBar: AppBar(
         title: Text('${widget.student.familyName}, ${widget.student.givenName}'),
       ),
       body: ListView(
         padding: const EdgeInsets.symmetric(vertical: 8.0),
-        children: widget.observations.entries.map((entry) {
+        children: dates.map((d) {
           return ObservationListItem(
-            date: entry.key,
-            observations: entry.value,
+            date: d,
+            observations: widget.observations[d]!,
             onEditObservation: _handleEditObservation,
             onRemoveObservation: _handleRemoveObservation,
           );
