@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_quill/flutter_quill.dart' as quill;
 
 class CategoryForm {
-  const CategoryForm(
-      {required this.nameController,
-      required this.templateController,
-      required this.onSave});
+  const CategoryForm({required this.nameController, required this.templateController, required this.onSave});
 
   final TextEditingController nameController;
   final quill.QuillController templateController;
@@ -21,7 +19,7 @@ class CategoryForm {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              newTextField('Name', nameController, true, 50),
+              newTextField(context, AppLocalizations.of(context)!.categoryName, nameController, true, 50),
             ],
           ),
         ),
@@ -35,14 +33,14 @@ class CategoryForm {
               onSave();
             }
           },
-          child: const Text('Save'),
+          child: Text(AppLocalizations.of(context)!.formSave),
         ),
       )
     ]);
   }
 
-  Widget newTextField(String label, TextEditingController controller,
-      bool required, int maxLength,
+  Widget newTextField(
+      BuildContext context, String label, TextEditingController controller, bool required, int maxLength,
       {RegExp? filter}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 16),
@@ -54,10 +52,10 @@ class CategoryForm {
         ),
         validator: (value) {
           if (required && (value == null || value.isEmpty)) {
-            return 'Required';
+            return AppLocalizations.of(context)!.formRequired;
           }
           if (filter != null && value != null && !filter.hasMatch(value)) {
-            return 'Invalid value';
+            return AppLocalizations.of(context)!.formInvalid;
           }
           return null;
         },
@@ -71,10 +69,7 @@ class CategoryForm {
       padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
       child: Column(
         children: [
-          quill.QuillToolbar.basic(
-              controller: controller,
-              showImageButton: false,
-              showVideoButton: false),
+          quill.QuillToolbar.basic(controller: controller, showImageButton: false, showVideoButton: false),
           Expanded(
             child: Container(
               child: quill.QuillEditor.basic(

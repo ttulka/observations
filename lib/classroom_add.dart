@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:uuid/uuid.dart';
 import 'classroom_form.dart';
 import 'domain.dart';
@@ -14,7 +15,7 @@ class AddClassroomDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add a new classroom'),
+        title: Text(AppLocalizations.of(context)!.addClassroomTitle),
       ),
       body: AddClassroomForm(onAddClassroom: (Classroom classroom) {
         onAddClassroom(classroom);
@@ -36,13 +37,13 @@ class AddClassroomForm extends StatefulWidget {
 class AddClassroomFormState extends State<AddClassroomForm> {
   final _formKey = GlobalKey<FormState>();
 
-  final idController = TextEditingController();
+  final nameController = TextEditingController();
   final yearController = TextEditingController();
   final descController = TextEditingController();
 
   @override
   void dispose() {
-    idController.dispose();
+    nameController.dispose();
     yearController.dispose();
     descController.dispose();
     super.dispose();
@@ -57,13 +58,13 @@ class AddClassroomFormState extends State<AddClassroomForm> {
   @override
   Widget build(BuildContext context) {
     return ClassroomForm(
-        idController: idController,
+        nameController: nameController,
         yearController: yearController,
         descController: descController,
         onSave: () {
           final classroom = Classroom(
               id: const Uuid().v4(),
-              name: idController.text,
+              name: nameController.text,
               year: int.parse(yearController.text),
               description: descController.text);
           widget.onAddClassroom(classroom);

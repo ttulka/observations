@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_quill/flutter_quill.dart' as quill;
 import 'package:uuid/uuid.dart';
 import 'category_form.dart';
@@ -17,7 +18,7 @@ class AddCategoryDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add a new category'),
+        title: Text(AppLocalizations.of(context)!.addCategoryTitle),
       ),
       body: AddCategoryForm(onAddCategory: (Category category) {
         onAddCategory(category);
@@ -40,22 +41,13 @@ class AddCategoryFormState extends State<AddCategoryForm> {
   final _formKey = GlobalKey<FormState>();
 
   final nameController = TextEditingController();
-  late quill.QuillController templateController;
+  final templateController = quill.QuillController.basic();
 
   @override
   void dispose() {
     nameController.dispose();
     templateController.dispose();
     super.dispose();
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    templateController = quill.QuillController(
-        document: quill.Document.fromJson(jsonDecode(
-            r'[{"insert":"Title 1"},{"insert":"\n","attributes":{"header":1}},{"insert":"\n\n\nTitle 2"},{"insert":"\n","attributes":{"header":1}},{"insert":"\n\n\nTitle 3"},{"insert":"\n","attributes":{"header":1}}]')),
-        selection: const TextSelection.collapsed(offset: 0));
   }
 
   @override

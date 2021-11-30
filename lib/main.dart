@@ -1,8 +1,13 @@
-import 'package:flutter/material.dart';
 import 'dart:io';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:window_size/window_size.dart';
 import 'classroom_list.dart';
 import 'category_list.dart';
+
+const appTitle = 'Student Observations';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -10,7 +15,7 @@ void main() {
     if (Platform.isWindows || Platform.isMacOS || Platform.isLinux) {
       const width = 1024.0;
       const height = 800.0;
-      setWindowTitle("Student Observations");
+      setWindowTitle(appTitle);
       setWindowMinSize(const Size(width, height));
       setWindowFrame(const Rect.fromLTWH(50, 50, width, height));
     }
@@ -29,11 +34,22 @@ class ObservationsApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        title: 'Student Observations',
-        home: HomePage(),
-        theme: ThemeData(
-          primarySwatch: color,
-        ));
+      title: appTitle,
+      home: HomePage(),
+      theme: ThemeData(
+        primarySwatch: color,
+      ),
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('en', ''),
+        Locale('de', ''),
+      ],
+    );
   }
 }
 
@@ -47,12 +63,14 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: const Text('Student Observations'),
+        title: Text(AppLocalizations.of(context)!.appTitle),
         actions: [
           IconButton(
             icon: const Icon(Icons.help),
-            tooltip: 'About',
-            onPressed: () => Navigator.pop(context, true),
+            tooltip: AppLocalizations.of(context)!.menuAbout,
+            onPressed: () {
+              //TODO
+            },
           ),
         ],
       ),
@@ -68,7 +86,7 @@ class HomePage extends StatelessWidget {
               child: Icon(Icons.settings, size: 48),
             ),
             ListTile(
-              title: const Text('Categories'),
+              title: Text(AppLocalizations.of(context)!.menuCategories),
               onTap: () {
                 Navigator.push(
                   context,

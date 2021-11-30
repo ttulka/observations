@@ -1,6 +1,7 @@
 # Student Observations
 
 ## TODO
+- internationalization
 - ordering categories (up, down)
 - validate unique values (classroom ID + year, student ID, etc)
 - storing documents as files
@@ -8,6 +9,5 @@
 - printing documents
 - exporting observations as PDF
 - searching (filtering) students
-- icon to the desktop app
 - backup/restore
 - sentiment of observation (???)

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_quill/flutter_quill.dart' as quill;
 import 'package:uuid/uuid.dart';
 import 'category_form.dart';
@@ -18,7 +19,7 @@ class EditCategoryDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Edit a category'),
+        title: Text(AppLocalizations.of(context)!.editCategoryTitle),
       ),
       body: EditCategoryForm(
           category: category,

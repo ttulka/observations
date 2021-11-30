@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_quill/flutter_quill.dart' as quill;
 import 'domain.dart';
 
@@ -33,7 +34,7 @@ class ObservationForm {
       Padding(
         padding: const EdgeInsets.symmetric(vertical: 16),
         child: ElevatedButton(
-          child: const Text('Save'),
+          child: Text(AppLocalizations.of(context)!.formSave),
           onPressed: () {
             for (Observation o in observations) {
               final tc = templateControllers[o.id];

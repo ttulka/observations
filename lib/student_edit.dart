@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'student_form.dart';
 import 'domain.dart';
 
 typedef EditStudent = Function(Student oldStudent, Student newStudent);
 
 class EditStudentDialog extends StatelessWidget {
-  const EditStudentDialog(
-      {required this.student, required this.onEditStudent, Key? key})
-      : super(key: key);
+  const EditStudentDialog({required this.student, required this.onEditStudent, Key? key}) : super(key: key);
 
   final Student student;
   final EditStudent onEditStudent;
@@ -16,7 +15,7 @@ class EditStudentDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Edit a student'),
+        title: Text(AppLocalizations.of(context)!.editStudentTitle),
       ),
       body: EditStudentForm(
           student: student,
@@ -29,9 +28,7 @@ class EditStudentDialog extends StatelessWidget {
 }
 
 class EditStudentForm extends StatefulWidget {
-  const EditStudentForm(
-      {required this.student, required this.onEditStudent, Key? key})
-      : super(key: key);
+  const EditStudentForm({required this.student, required this.onEditStudent, Key? key}) : super(key: key);
 
   final Student student;
   final EditStudent onEditStudent;
@@ -67,9 +64,7 @@ class EditStudentFormState extends State<EditStudentForm> {
         givenNameController: givenNameController,
         onSave: () {
           final newStudent = Student(
-              id: widget.student.id,
-              familyName: familyNameController.text,
-              givenName: givenNameController.text);
+              id: widget.student.id, familyName: familyNameController.text, givenName: givenNameController.text);
           widget.onEditStudent(widget.student, newStudent);
         }).build(context, _formKey);
   }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'classroom_form.dart';
 import 'domain.dart';
 
@@ -14,7 +15,7 @@ class EditClassroomDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Edit a classroom'),
+        title: Text(AppLocalizations.of(context)!.editClassroomTitle),
       ),
       body: EditClassroomForm(
           classroom: classroom,
@@ -39,13 +40,13 @@ class EditClassroomForm extends StatefulWidget {
 class EditClassroomFormState extends State<EditClassroomForm> {
   final _formKey = GlobalKey<FormState>();
 
-  final idController = TextEditingController();
+  final nameController = TextEditingController();
   final yearController = TextEditingController();
   final descController = TextEditingController();
 
   @override
   void dispose() {
-    idController.dispose();
+    nameController.dispose();
     yearController.dispose();
     descController.dispose();
     super.dispose();
@@ -54,7 +55,7 @@ class EditClassroomFormState extends State<EditClassroomForm> {
   @override
   void initState() {
     super.initState();
-    idController.text = widget.classroom.id;
+    nameController.text = widget.classroom.name;
     yearController.text = widget.classroom.year.toString();
     descController.text = widget.classroom.description;
   }
@@ -62,13 +63,13 @@ class EditClassroomFormState extends State<EditClassroomForm> {
   @override
   Widget build(BuildContext context) {
     return ClassroomForm(
-        idController: idController,
+        nameController: nameController,
         yearController: yearController,
         descController: descController,
         onSave: () {
           final classroom = Classroom(
               id: widget.classroom.id,
-              name: idController.text,
+              name: nameController.text,
               year: int.parse(yearController.text),
               description: descController.text);
           widget.onEditClassroom(classroom);

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'service.dart';
 import 'domain.dart';
 import 'category_add.dart';
@@ -92,7 +93,7 @@ class _CategoryListState extends State<CategoryList> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Observation Categories'),
+        title: Text(AppLocalizations.of(context)!.listCategoryTitle),
       ),
       body: ListView(
         padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -107,7 +108,7 @@ class _CategoryListState extends State<CategoryList> {
         }).toList(),
       ),
       floatingActionButton: FloatingActionButton(
-          tooltip: 'Add a new category',
+          tooltip: AppLocalizations.of(context)!.addCategoryTitle,
           child: const Icon(Icons.add),
           onPressed: () async {
             final result = await Navigator.push(
@@ -120,7 +121,7 @@ class _CategoryListState extends State<CategoryList> {
             if (result != null && result) {
               ScaffoldMessenger.of(context)
                 ..removeCurrentSnackBar()
-                ..showSnackBar(const SnackBar(content: Text('Added successfully.')));
+                ..showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.addSuccess)));
             }
           }),
     );
@@ -154,17 +155,17 @@ class CategoryListItem extends StatelessWidget {
         child: Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
           IconButton(
               icon: const Icon(Icons.arrow_upward),
-              tooltip: 'Up',
+              tooltip: AppLocalizations.of(context)!.listCategoryUp,
               splashRadius: 20,
               onPressed: () => onUpCategory(category)),
           IconButton(
               icon: const Icon(Icons.arrow_downward),
-              tooltip: 'Down',
+              tooltip: AppLocalizations.of(context)!.listCategoryDown,
               splashRadius: 20,
               onPressed: () => onDownCategory(category)),
           IconButton(
               icon: const Icon(Icons.edit),
-              tooltip: 'Edit this category',
+              tooltip: AppLocalizations.of(context)!.editCategoryHint,
               splashRadius: 20,
               onPressed: () async {
                 final result = await Navigator.push(
@@ -178,18 +179,18 @@ class CategoryListItem extends StatelessWidget {
                 if (result != null && result) {
                   ScaffoldMessenger.of(context)
                     ..removeCurrentSnackBar()
-                    ..showSnackBar(const SnackBar(content: Text('Edited successfully.')));
+                    ..showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.editSuccess)));
                 }
               }),
           IconButton(
               icon: const Icon(Icons.remove_circle_outline),
-              tooltip: 'Remove this category',
+              tooltip: AppLocalizations.of(context)!.removeCategoryHint,
               splashRadius: 20,
               onPressed: () {
                 onRemoveCategory(category);
                 ScaffoldMessenger.of(context)
                   ..removeCurrentSnackBar()
-                  ..showSnackBar(const SnackBar(content: Text('Removed successfully.')));
+                  ..showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.removeSuccess)));
               }),
         ]),
       ),

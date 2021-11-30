@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'service.dart';
 import 'domain.dart';
 import 'classroom_add.dart';
@@ -72,7 +73,7 @@ class _ClassroomListState extends State<ClassroomList> {
         children: _buildItems(),
       ),
       floatingActionButton: FloatingActionButton(
-          tooltip: 'Add a new classroom',
+          tooltip: AppLocalizations.of(context)!.addClassroomTitle,
           child: const Icon(Icons.add),
           onPressed: () async {
             final result = await Navigator.push(
@@ -85,7 +86,7 @@ class _ClassroomListState extends State<ClassroomList> {
             if (result != null && result) {
               ScaffoldMessenger.of(context)
                 ..removeCurrentSnackBar()
-                ..showSnackBar(const SnackBar(content: Text('Added successfully.')));
+                ..showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.addSuccess)));
             }
           }),
     );
@@ -135,7 +136,7 @@ class ClassroomListItem extends StatelessWidget {
         child: Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
           IconButton(
             icon: const Icon(Icons.edit),
-            tooltip: 'Edit this classroom',
+            tooltip: AppLocalizations.of(context)!.editClassroomHint,
             splashRadius: 20,
             onPressed: () async {
               final result = await Navigator.push(
@@ -149,19 +150,19 @@ class ClassroomListItem extends StatelessWidget {
               if (result != null && result) {
                 ScaffoldMessenger.of(context)
                   ..removeCurrentSnackBar()
-                  ..showSnackBar(const SnackBar(content: Text('Edited successfully.')));
+                  ..showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.editSuccess)));
               }
             },
           ),
           IconButton(
               icon: const Icon(Icons.remove_circle_outline),
-              tooltip: 'Remove this classroom',
+              tooltip: AppLocalizations.of(context)!.removeClassroomHint,
               splashRadius: 20,
               onPressed: () {
                 onRemoveClassroom(classroom);
                 ScaffoldMessenger.of(context)
                   ..removeCurrentSnackBar()
-                  ..showSnackBar(const SnackBar(content: Text('Removed successfully.')));
+                  ..showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.removeSuccess)));
               }),
         ]),
       ),

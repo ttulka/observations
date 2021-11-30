@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:uuid/uuid.dart';
 import 'student_form.dart';
 import 'domain.dart';
@@ -6,8 +7,7 @@ import 'domain.dart';
 typedef AddStudent = Function(Student student);
 
 class AddStudentDialog extends StatelessWidget {
-  const AddStudentDialog({required this.onAddStudent, Key? key})
-      : super(key: key);
+  const AddStudentDialog({required this.onAddStudent, Key? key}) : super(key: key);
 
   final AddStudent onAddStudent;
 
@@ -15,7 +15,7 @@ class AddStudentDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add a new student'),
+        title: Text(AppLocalizations.of(context)!.addStudentTitle),
       ),
       body: AddStudentForm(onAddStudent: (Student student) {
         onAddStudent(student);
@@ -26,8 +26,7 @@ class AddStudentDialog extends StatelessWidget {
 }
 
 class AddStudentForm extends StatefulWidget {
-  const AddStudentForm({required this.onAddStudent, Key? key})
-      : super(key: key);
+  const AddStudentForm({required this.onAddStudent, Key? key}) : super(key: key);
 
   final AddStudent onAddStudent;
 
@@ -55,9 +54,7 @@ class AddStudentFormState extends State<AddStudentForm> {
         givenNameController: givenNameController,
         onSave: () {
           final student = Student(
-              id: const Uuid().v4(),
-              familyName: familyNameController.text,
-              givenName: givenNameController.text);
+              id: const Uuid().v4(), familyName: familyNameController.text, givenName: givenNameController.text);
           widget.onAddStudent(student);
         }).build(context, _formKey);
   }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'service.dart';
 import 'domain.dart';
 import 'student_add.dart';
@@ -86,7 +87,7 @@ class _StudentListState extends State<StudentList> {
         }).toList(),
       ),
       floatingActionButton: FloatingActionButton(
-          tooltip: 'Add a new student',
+          tooltip: AppLocalizations.of(context)!.addStudentTitle,
           child: const Icon(Icons.add),
           onPressed: () async {
             final result = await Navigator.push(
@@ -99,7 +100,7 @@ class _StudentListState extends State<StudentList> {
             if (result != null && result) {
               ScaffoldMessenger.of(context)
                 ..removeCurrentSnackBar()
-                ..showSnackBar(const SnackBar(content: Text('Added successfully.')));
+                ..showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.addSuccess)));
             }
           }),
     );
@@ -132,7 +133,7 @@ class StudentListItem extends StatelessWidget {
         child: Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
           IconButton(
               icon: const Icon(Icons.edit),
-              tooltip: 'Edit this student',
+              tooltip: AppLocalizations.of(context)!.editStudentHint,
               splashRadius: 20,
               onPressed: () async {
                 final result = await Navigator.push(
@@ -146,24 +147,22 @@ class StudentListItem extends StatelessWidget {
                 if (result != null && result) {
                   ScaffoldMessenger.of(context)
                     ..removeCurrentSnackBar()
-                    ..showSnackBar(const SnackBar(content: Text('Edited successfully.')));
+                    ..showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.editSuccess)));
                 }
               }),
           IconButton(
               icon: const Icon(Icons.remove_circle_outline),
-              tooltip: 'Remove this student',
+              tooltip: AppLocalizations.of(context)!.removeStudentHint,
               splashRadius: 20,
               onPressed: () {
                 onRemoveStudent(student);
                 ScaffoldMessenger.of(context)
                   ..removeCurrentSnackBar()
-                  ..showSnackBar(const SnackBar(content: Text('Removed successfully.')));
+                  ..showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.removeSuccess)));
               }),
         ]),
       ),
-      title: Text(
-        '${student.familyName}, ${student.givenName}',
-      ),
+      title: Text('${student.familyName}, ${student.givenName}'),
     );
   }
 }
