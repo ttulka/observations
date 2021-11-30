@@ -26,7 +26,6 @@ void main() {
     // ignore: avoid_print
     print('Cannot determine platform: $e');
   }
-  DatabaseHolder.connectDatabase();
   runApp(const ObservationsApp());
 }
 

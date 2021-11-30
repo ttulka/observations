@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:uuid/uuid.dart';
 import 'student_form.dart';
-import 'domain.dart';
-
-typedef AddStudent = Function(Student student);
+import 'student_domain.dart';
+import 'classroom_domain.dart';
 
 class AddStudentDialog extends StatelessWidget {
-  const AddStudentDialog({required this.onAddStudent, Key? key}) : super(key: key);
+  const AddStudentDialog({required this.classroom, required this.onAddStudent, Key? key}) : super(key: key);
 
-  final AddStudent onAddStudent;
+  final Classroom classroom;
+  final Function(Student) onAddStudent;
 
   @override
   Widget build(BuildContext context) {
@@ -17,18 +17,21 @@ class AddStudentDialog extends StatelessWidget {
       appBar: AppBar(
         title: Text(AppLocalizations.of(context)!.addStudentTitle),
       ),
-      body: AddStudentForm(onAddStudent: (Student student) {
-        onAddStudent(student);
-        Navigator.pop(context, true);
-      }),
+      body: AddStudentForm(
+          classroom: classroom,
+          onAddStudent: (Student student) async {
+            await onAddStudent(student);
+            Navigator.pop(context, true);
+          }),
     );
   }
 }
 
 class AddStudentForm extends StatefulWidget {
-  const AddStudentForm({required this.onAddStudent, Key? key}) : super(key: key);
+  const AddStudentForm({required this.classroom, required this.onAddStudent, Key? key}) : super(key: key);
 
-  final AddStudent onAddStudent;
+  final Classroom classroom;
+  final Function(Student) onAddStudent;
 
   @override
   AddStudentFormState createState() => AddStudentFormState();
@@ -52,10 +55,14 @@ class AddStudentFormState extends State<AddStudentForm> {
     return StudentForm(
         familyNameController: familyNameController,
         givenNameController: givenNameController,
-        onSave: () {
+        onSave: () async {
           final student = Student(
-              id: const Uuid().v4(), familyName: familyNameController.text, givenName: givenNameController.text);
-          widget.onAddStudent(student);
+            id: const Uuid().v4(),
+            familyName: familyNameController.text,
+            givenName: givenNameController.text,
+            classroomId: widget.classroom.id,
+          );
+          await widget.onAddStudent(student);
         }).build(context, _formKey);
   }
 }

@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'helpers.dart';
-import 'service.dart';
-import 'domain.dart';
+import 'widget_helpers.dart';
+import 'category_domain.dart';
+import 'category_service.dart';
 import 'category_add.dart';
 import 'category_edit.dart';
 
-typedef ListCategories = List<Category> Function();
 typedef UpdateCategory = Future<void> Function(Category category);
 
 class CategoryList extends StatefulWidget {
@@ -19,7 +18,7 @@ class CategoryList extends StatefulWidget {
   Future<void> onRemoveCategory(Category category) => _service.remove(category);
   Future<void> onUpCategory(Category category) => _service.up(category);
   Future<void> onDownCategory(Category category) => _service.down(category);
-  Future<List<Category>> loadCategories() async => await _service.listAll();
+  Future<List<Category>> loadCategories() => _service.listAll();
 
   @override
   _CategoryListState createState() => _CategoryListState();
@@ -72,23 +71,8 @@ class _CategoryListState extends State<CategoryList> {
               .toList(),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-          tooltip: AppLocalizations.of(context)!.addCategoryTitle,
-          child: const Icon(Icons.add),
-          onPressed: () async {
-            final result = await Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => AddCategoryDialog(
-                        onAddCategory: _handleAddCategory,
-                      )),
-            );
-            if (result != null && result) {
-              ScaffoldMessenger.of(context)
-                ..removeCurrentSnackBar()
-                ..showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.addSuccess)));
-            }
-          }),
+      floatingActionButton:
+          buildFloatingAddButton(context, (c) => AddCategoryDialog(onAddCategory: _handleAddCategory)),
     );
   }
 }

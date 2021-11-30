@@ -13,7 +13,7 @@ Widget buildFutureWidget<T>({required Future<T> future, required Widget Function
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const Icon(Icons.error_outline, color: Colors.red, size: 60),
+                const Icon(Icons.error_outline, color: Colors.red, size: 22),
                 Padding(
                   padding: const EdgeInsets.only(top: 16),
                   child: Text('Error: ${snapshot.error}', style: const TextStyle(color: Colors.red)),
@@ -36,4 +36,18 @@ Widget buildFutureWidget<T>({required Future<T> future, required Widget Function
       }
     },
   );
+}
+
+Widget buildFloatingAddButton(BuildContext context, Widget Function(BuildContext) buildDialog) {
+  return FloatingActionButton(
+      tooltip: AppLocalizations.of(context)!.addClassroomTitle,
+      child: const Icon(Icons.add),
+      onPressed: () async {
+        final result = await Navigator.push(context, MaterialPageRoute(builder: buildDialog));
+        if (result != null && result) {
+          ScaffoldMessenger.of(context)
+            ..removeCurrentSnackBar()
+            ..showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.addSuccess)));
+        }
+      });
 }

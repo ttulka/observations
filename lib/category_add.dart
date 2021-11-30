@@ -5,7 +5,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_quill/flutter_quill.dart' as quill;
 import 'package:uuid/uuid.dart';
 import 'category_form.dart';
-import 'domain.dart';
+import 'category_domain.dart';
 
 class AddCategoryDialog extends StatelessWidget {
   const AddCategoryDialog({required this.onAddCategory, Key? key}) : super(key: key);
@@ -18,8 +18,8 @@ class AddCategoryDialog extends StatelessWidget {
       appBar: AppBar(
         title: Text(AppLocalizations.of(context)!.addCategoryTitle),
       ),
-      body: AddCategoryForm(onAddCategory: (Category category) {
-        onAddCategory(category);
+      body: AddCategoryForm(onAddCategory: (Category category) async {
+        await onAddCategory(category);
         Navigator.pop(context, true);
       }),
     );
@@ -53,10 +53,14 @@ class AddCategoryFormState extends State<AddCategoryForm> {
     return CategoryForm(
         nameController: nameController,
         templateController: templateController,
-        onSave: () {
+        onSave: () async {
           final template = jsonEncode(templateController.document.toDelta().toJson());
-          final category = Category(id: const Uuid().v4(), name: nameController.text, template: template);
-          widget.onAddCategory(category);
+          final category = Category(
+            id: const Uuid().v4(),
+            name: nameController.text,
+            template: template,
+          );
+          await widget.onAddCategory(category);
         }).build(context, _formKey);
   }
 }

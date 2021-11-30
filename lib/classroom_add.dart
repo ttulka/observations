@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:uuid/uuid.dart';
 import 'classroom_form.dart';
-import 'domain.dart';
+import 'classroom_domain.dart';
 
 typedef AddClassroom = Function(Classroom classroom);
 
@@ -17,8 +17,8 @@ class AddClassroomDialog extends StatelessWidget {
       appBar: AppBar(
         title: Text(AppLocalizations.of(context)!.addClassroomTitle),
       ),
-      body: AddClassroomForm(onAddClassroom: (Classroom classroom) {
-        onAddClassroom(classroom);
+      body: AddClassroomForm(onAddClassroom: (Classroom classroom) async {
+        await onAddClassroom(classroom);
         Navigator.pop(context, true);
       }),
     );
@@ -61,13 +61,13 @@ class AddClassroomFormState extends State<AddClassroomForm> {
         nameController: nameController,
         yearController: yearController,
         descController: descController,
-        onSave: () {
+        onSave: () async {
           final classroom = Classroom(
               id: const Uuid().v4(),
               name: nameController.text,
               year: int.parse(yearController.text),
               description: descController.text);
-          widget.onAddClassroom(classroom);
+          await widget.onAddClassroom(classroom);
         }).build(context, _formKey);
   }
 }

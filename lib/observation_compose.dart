@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:uuid/uuid.dart';
-import 'helpers.dart';
-import 'domain.dart';
-import 'service.dart';
+import 'widget_helpers.dart';
+import 'observation_domain.dart';
+import 'student_domain.dart';
+import 'classroom_domain.dart';
+import 'category_domain.dart';
+import 'observation_service.dart';
+import 'category_service.dart';
 import 'observation_form.dart';
 
 typedef SaveObservation = Function(Observation observation);
@@ -41,9 +45,9 @@ class ComposeObservationDialog extends StatelessWidget {
   }
 
   Future<ComposeObservationData> _prepareData() async {
-    final currentObservations = _observationService.listByStudent(student);
+    final currentObservations = await _observationService.listByStudent(student);
     final categories = _mergeCategories(await _categoryService.listAll(), currentObservations);
-    final observations = _mergeObservations(categories, currentObservations);
+    final observations = _mergeObservations(categories, currentObservations, student.id);
     return ComposeObservationData(
       categories: categories,
       observations: observations,
@@ -53,16 +57,25 @@ class ComposeObservationDialog extends StatelessWidget {
   static List<Category> _mergeCategories(List<Category> categories, List<Observation> observations) {
     final List<Category> results = [];
     results.addAll(categories);
-    observations.map((o) => o.category).where((c) => !categories.contains(c)).forEach((c) => results.add(c));
+    observations
+        .map((o) => o.category)
+        .where((c) => categories.indexWhere((c_) => c_.id == c.id) == -1)
+        .forEach((c) => results.add(c));
     return results;
   }
 
-  static List<Observation> _mergeObservations(List<Category> categories, List<Observation> observations) {
+  static List<Observation> _mergeObservations(
+      List<Category> categories, List<Observation> observations, String studentId) {
     return categories
         .map((c) => observations.firstWhere(
               (o) => o.category.id == c.id,
-              orElse: () =>
-                  Observation(id: const Uuid().v4(), category: c, updatedAt: DateTime.now(), content: c.template),
+              orElse: () => Observation(
+                id: const Uuid().v4(),
+                category: c,
+                studentId: studentId,
+                updatedAt: DateTime.now(),
+                content: c.template,
+              ),
             ))
         .toList();
   }

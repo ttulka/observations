@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'classroom_form.dart';
-import 'domain.dart';
-
-typedef EditClassroom = Function(Classroom classroom);
+import 'classroom_domain.dart';
 
 class EditClassroomDialog extends StatelessWidget {
   const EditClassroomDialog({required this.classroom, required this.onEditClassroom, Key? key}) : super(key: key);
 
   final Classroom classroom;
-  final EditClassroom onEditClassroom;
+  final Function(Classroom) onEditClassroom;
 
   @override
   Widget build(BuildContext context) {
@@ -19,8 +17,8 @@ class EditClassroomDialog extends StatelessWidget {
       ),
       body: EditClassroomForm(
           classroom: classroom,
-          onEditClassroom: (Classroom classroom) {
-            onEditClassroom(classroom);
+          onEditClassroom: (Classroom classroom) async {
+            await onEditClassroom(classroom);
             Navigator.pop(context, true);
           }),
     );
@@ -31,7 +29,7 @@ class EditClassroomForm extends StatefulWidget {
   const EditClassroomForm({required this.classroom, required this.onEditClassroom, Key? key}) : super(key: key);
 
   final Classroom classroom;
-  final EditClassroom onEditClassroom;
+  final Function(Classroom) onEditClassroom;
 
   @override
   EditClassroomFormState createState() => EditClassroomFormState();
@@ -66,13 +64,13 @@ class EditClassroomFormState extends State<EditClassroomForm> {
         nameController: nameController,
         yearController: yearController,
         descController: descController,
-        onSave: () {
+        onSave: () async {
           final classroom = Classroom(
               id: widget.classroom.id,
               name: nameController.text,
               year: int.parse(yearController.text),
               description: descController.text);
-          widget.onEditClassroom(classroom);
+          await widget.onEditClassroom(classroom);
         }).build(context, _formKey);
   }
 }

@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'student_form.dart';
-import 'domain.dart';
-
-typedef EditStudent = Function(Student oldStudent, Student newStudent);
+import 'student_domain.dart';
 
 class EditStudentDialog extends StatelessWidget {
   const EditStudentDialog({required this.student, required this.onEditStudent, Key? key}) : super(key: key);
 
   final Student student;
-  final EditStudent onEditStudent;
+  final Function(Student) onEditStudent;
 
   @override
   Widget build(BuildContext context) {
@@ -19,8 +17,8 @@ class EditStudentDialog extends StatelessWidget {
       ),
       body: EditStudentForm(
           student: student,
-          onEditStudent: (Student oldStudent, Student newStudent) {
-            onEditStudent(oldStudent, newStudent);
+          onEditStudent: (Student student) async {
+            await onEditStudent(student);
             Navigator.pop(context, true);
           }),
     );
@@ -31,7 +29,7 @@ class EditStudentForm extends StatefulWidget {
   const EditStudentForm({required this.student, required this.onEditStudent, Key? key}) : super(key: key);
 
   final Student student;
-  final EditStudent onEditStudent;
+  final Function(Student) onEditStudent;
 
   @override
   EditStudentFormState createState() => EditStudentFormState();
@@ -62,10 +60,14 @@ class EditStudentFormState extends State<EditStudentForm> {
     return StudentForm(
         familyNameController: familyNameController,
         givenNameController: givenNameController,
-        onSave: () {
-          final newStudent = Student(
-              id: widget.student.id, familyName: familyNameController.text, givenName: givenNameController.text);
-          widget.onEditStudent(widget.student, newStudent);
+        onSave: () async {
+          final student = Student(
+            id: widget.student.id,
+            familyName: familyNameController.text,
+            givenName: givenNameController.text,
+            classroomId: widget.student.classroomId,
+          );
+          await widget.onEditStudent(student);
         }).build(context, _formKey);
   }
 }

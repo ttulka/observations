@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_quill/flutter_quill.dart' as quill;
-import 'domain.dart';
+import 'observation_domain.dart';
 
 class ObservationForm {
   ObservationForm({required this.observations, required this.onSave});
@@ -35,17 +35,22 @@ class ObservationForm {
         padding: const EdgeInsets.symmetric(vertical: 16),
         child: ElevatedButton(
           child: Text(AppLocalizations.of(context)!.formSave),
-          onPressed: () {
+          onPressed: () async {
             for (Observation o in observations) {
               final tc = templateControllers[o.id];
               if (tc != null) {
                 final content = jsonEncode(tc.document.toDelta().toJson());
-                final observation =
-                    Observation(id: o.id, category: o.category, updatedAt: DateTime.now(), content: content);
-                onSave(observation);
+                final observation = Observation(
+                  id: o.id,
+                  category: o.category,
+                  studentId: o.studentId,
+                  updatedAt: DateTime.now(),
+                  content: content,
+                );
+                await onSave(observation);
               }
             }
-            onFinish();
+            await onFinish();
           },
         ),
       ),

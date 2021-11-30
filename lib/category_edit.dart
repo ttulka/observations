@@ -5,7 +5,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_quill/flutter_quill.dart' as quill;
 import 'package:uuid/uuid.dart';
 import 'category_form.dart';
-import 'domain.dart';
+import 'category_domain.dart';
 
 class EditCategoryDialog extends StatelessWidget {
   const EditCategoryDialog({required this.category, required this.onEditCategory, Key? key}) : super(key: key);
@@ -68,10 +68,14 @@ class EditCategoryFormState extends State<EditCategoryForm> {
     return CategoryForm(
         nameController: nameController,
         templateController: templateController,
-        onSave: () {
+        onSave: () async {
           final template = jsonEncode(templateController.document.toDelta().toJson());
-          final category = Category(id: const Uuid().v4(), name: nameController.text, template: template);
-          widget.onEditCategory(category);
+          final category = Category(
+            id: widget.category.id,
+            name: nameController.text,
+            template: template,
+          );
+          await widget.onEditCategory(category);
         }).build(context, _formKey);
   }
 }

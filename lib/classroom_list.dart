@@ -1,100 +1,62 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'service.dart';
-import 'domain.dart';
+import 'widget_helpers.dart';
+import 'classroom_service.dart';
+import 'classroom_domain.dart';
 import 'classroom_add.dart';
 import 'classroom_edit.dart';
 import 'student_list.dart';
 
-typedef ListClassrooms = List<Classroom> Function();
-typedef RemoveClassroom = Function(Classroom classroom);
+typedef UpdateClassroom = Function(Classroom classroom);
 
 class ClassroomList extends StatefulWidget {
   ClassroomList({Key? key}) : super(key: key);
 
   final ClassroomService _service = ClassroomService();
 
-  final Map<int, List<Classroom>> classrooms = {};
-
-  void onAddClassroom(Classroom classroom) {
-    _service.add(classroom);
-  }
-
-  void onEditClassroom(Classroom classroom) {
-    _service.edit(classroom);
-  }
-
-  void onRemoveClassroom(Classroom classroom) {
-    _service.remove(classroom);
-  }
-
-  void loadClassrooms() {
-    classrooms.clear();
-    classrooms.addAll(_service.listAll());
-  }
+  Future<void> onAddClassroom(Classroom classroom) => _service.add(classroom);
+  Future<void> onEditClassroom(Classroom classroom) => _service.edit(classroom);
+  Future<void> onRemoveClassroom(Classroom classroom) => _service.remove(classroom);
+  Future<ClassroomPerYear> loadClassrooms() => _service.listAll();
 
   @override
   _ClassroomListState createState() => _ClassroomListState();
 }
 
 class _ClassroomListState extends State<ClassroomList> {
-  void _handleAddClassroom(Classroom classroom) {
-    setState(() {
-      widget.onAddClassroom(classroom);
-      widget.loadClassrooms();
-    });
+  Future<void> _handleAddClassroom(Classroom classroom) async {
+    await widget.onAddClassroom(classroom);
+    setState(() {});
   }
 
-  void _handleRemoveClassroom(Classroom classroom) {
-    setState(() {
-      widget.onRemoveClassroom(classroom);
-      widget.loadClassrooms();
-    });
+  Future<void> _handleRemoveClassroom(Classroom classroom) async {
+    await widget.onRemoveClassroom(classroom);
+    setState(() {});
   }
 
-  void _handleEditClassroom(Classroom classroom) {
-    setState(() {
-      widget.onEditClassroom(classroom);
-      widget.loadClassrooms();
-    });
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    widget.loadClassrooms();
+  Future<void> _handleEditClassroom(Classroom classroom) async {
+    await widget.onEditClassroom(classroom);
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: ListView(
-        padding: const EdgeInsets.symmetric(vertical: 8.0),
-        children: _buildItems(),
+      body: buildFutureWidget<ClassroomPerYear>(
+        future: widget.loadClassrooms(),
+        buildWidget: (categories) => ListView(
+          padding: const EdgeInsets.symmetric(vertical: 8.0),
+          children: _buildItems(categories),
+        ),
       ),
-      floatingActionButton: FloatingActionButton(
-          tooltip: AppLocalizations.of(context)!.addClassroomTitle,
-          child: const Icon(Icons.add),
-          onPressed: () async {
-            final result = await Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => AddClassroomDialog(
-                        onAddClassroom: _handleAddClassroom,
-                      )),
-            );
-            if (result != null && result) {
-              ScaffoldMessenger.of(context)
-                ..removeCurrentSnackBar()
-                ..showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.addSuccess)));
-            }
-          }),
+      floatingActionButton:
+          buildFloatingAddButton(context, (c) => AddClassroomDialog(onAddClassroom: _handleAddClassroom)),
     );
   }
 
-  List<Widget> _buildItems() {
+  List<Widget> _buildItems(ClassroomPerYear classrooms) {
     final List<Widget> items = [];
-    for (final entry in widget.classrooms.entries) {
+    for (final entry in classrooms.entries) {
       items.add(Padding(
           padding: const EdgeInsets.symmetric(horizontal: 68, vertical: 14),
           child: Text('${entry.key}/${entry.key + 1}',
@@ -115,8 +77,8 @@ class ClassroomListItem extends StatelessWidget {
 
   final Classroom classroom;
 
-  final EditClassroom onEditClassroom;
-  final RemoveClassroom onRemoveClassroom;
+  final UpdateClassroom onEditClassroom;
+  final UpdateClassroom onRemoveClassroom;
 
   @override
   Widget build(BuildContext context) {
@@ -158,8 +120,8 @@ class ClassroomListItem extends StatelessWidget {
               icon: const Icon(Icons.remove_circle_outline),
               tooltip: AppLocalizations.of(context)!.removeClassroomHint,
               splashRadius: 20,
-              onPressed: () {
-                onRemoveClassroom(classroom);
+              onPressed: () async {
+                await onRemoveClassroom(classroom);
                 ScaffoldMessenger.of(context)
                   ..removeCurrentSnackBar()
                   ..showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.removeSuccess)));
