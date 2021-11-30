@@ -3,7 +3,7 @@ import 'service.dart';
 import 'domain.dart';
 import 'student_add.dart';
 import 'student_edit.dart';
-import 'observation_list.dart';
+import 'observation_compose.dart';
 
 typedef ListStudents = List<Student> Function();
 typedef RemoveStudent = Function(Student student);
@@ -71,16 +71,15 @@ class _StudentListState extends State<StudentList> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.classroom.id +
-            (widget.classroom.description.isNotEmpty
-                ? ' | ${widget.classroom.description}'
-                : '')),
+        title: Text(widget.classroom.name +
+            (widget.classroom.description.isNotEmpty ? ' (${widget.classroom.description})' : '')),
       ),
       body: ListView(
         padding: const EdgeInsets.symmetric(vertical: 8.0),
         children: widget.students.map((Student student) {
           return StudentListItem(
             student: student,
+            classroom: widget.classroom,
             onEditStudent: _handleEditStudent,
             onRemoveStudent: _handleRemoveStudent,
           );
@@ -100,8 +99,7 @@ class _StudentListState extends State<StudentList> {
             if (result != null && result) {
               ScaffoldMessenger.of(context)
                 ..removeCurrentSnackBar()
-                ..showSnackBar(
-                    const SnackBar(content: Text('Added successfully.')));
+                ..showSnackBar(const SnackBar(content: Text('Added successfully.')));
             }
           }),
     );
@@ -110,12 +108,11 @@ class _StudentListState extends State<StudentList> {
 
 class StudentListItem extends StatelessWidget {
   StudentListItem(
-      {required this.student,
-      required this.onEditStudent,
-      required this.onRemoveStudent})
+      {required this.student, required this.classroom, required this.onEditStudent, required this.onRemoveStudent})
       : super(key: ObjectKey(student));
 
   final Student student;
+  final Classroom classroom;
 
   final EditStudent onEditStudent;
   final RemoveStudent onRemoveStudent;
@@ -125,10 +122,7 @@ class StudentListItem extends StatelessWidget {
     return ListTile(
       onTap: () => Navigator.push(
         context,
-        MaterialPageRoute(
-            builder: (context) => ObservationList(
-                  student: student,
-                )),
+        MaterialPageRoute(builder: (context) => ComposeObservationDialog(student: student, classroom: classroom)),
       ),
       leading: const CircleAvatar(
         child: Icon(Icons.face),
@@ -152,8 +146,7 @@ class StudentListItem extends StatelessWidget {
                 if (result != null && result) {
                   ScaffoldMessenger.of(context)
                     ..removeCurrentSnackBar()
-                    ..showSnackBar(
-                        const SnackBar(content: Text('Edited successfully.')));
+                    ..showSnackBar(const SnackBar(content: Text('Edited successfully.')));
                 }
               }),
           IconButton(
@@ -164,8 +157,7 @@ class StudentListItem extends StatelessWidget {
                 onRemoveStudent(student);
                 ScaffoldMessenger.of(context)
                   ..removeCurrentSnackBar()
-                  ..showSnackBar(
-                      const SnackBar(content: Text('Removed successfully.')));
+                  ..showSnackBar(const SnackBar(content: Text('Removed successfully.')));
               }),
         ]),
       ),

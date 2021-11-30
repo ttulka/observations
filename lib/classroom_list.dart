@@ -19,8 +19,8 @@ class ClassroomList extends StatefulWidget {
     _service.add(classroom);
   }
 
-  void onEditClassroom(Classroom oldClassroom, Classroom newClassroom) {
-    _service.edit(oldClassroom, newClassroom);
+  void onEditClassroom(Classroom classroom) {
+    _service.edit(classroom);
   }
 
   void onRemoveClassroom(Classroom classroom) {
@@ -51,9 +51,9 @@ class _ClassroomListState extends State<ClassroomList> {
     });
   }
 
-  void _handleEditClassroom(Classroom oldClassroom, Classroom newClassroom) {
+  void _handleEditClassroom(Classroom classroom) {
     setState(() {
-      widget.onEditClassroom(oldClassroom, newClassroom);
+      widget.onEditClassroom(classroom);
       widget.loadClassrooms();
     });
   }
@@ -85,8 +85,7 @@ class _ClassroomListState extends State<ClassroomList> {
             if (result != null && result) {
               ScaffoldMessenger.of(context)
                 ..removeCurrentSnackBar()
-                ..showSnackBar(
-                    const SnackBar(content: Text('Added successfully.')));
+                ..showSnackBar(const SnackBar(content: Text('Added successfully.')));
             }
           }),
     );
@@ -98,8 +97,7 @@ class _ClassroomListState extends State<ClassroomList> {
       items.add(Padding(
           padding: const EdgeInsets.symmetric(horizontal: 68, vertical: 14),
           child: Text('${entry.key}/${entry.key + 1}',
-              style:
-                  const TextStyle(fontWeight: FontWeight.bold, fontSize: 18))));
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18))));
       items.addAll(entry.value.map((c) => ClassroomListItem(
             classroom: c,
             onEditClassroom: _handleEditClassroom,
@@ -111,10 +109,7 @@ class _ClassroomListState extends State<ClassroomList> {
 }
 
 class ClassroomListItem extends StatelessWidget {
-  ClassroomListItem(
-      {required this.classroom,
-      required this.onEditClassroom,
-      required this.onRemoveClassroom})
+  ClassroomListItem({required this.classroom, required this.onEditClassroom, required this.onRemoveClassroom})
       : super(key: ObjectKey(classroom));
 
   final Classroom classroom;
@@ -133,7 +128,7 @@ class ClassroomListItem extends StatelessWidget {
                 )),
       ),
       leading: CircleAvatar(
-        child: Text(classroom.id),
+        child: Text(classroom.name),
       ),
       trailing: FittedBox(
         fit: BoxFit.fill,
@@ -154,8 +149,7 @@ class ClassroomListItem extends StatelessWidget {
               if (result != null && result) {
                 ScaffoldMessenger.of(context)
                   ..removeCurrentSnackBar()
-                  ..showSnackBar(
-                      const SnackBar(content: Text('Edited successfully.')));
+                  ..showSnackBar(const SnackBar(content: Text('Edited successfully.')));
               }
             },
           ),
@@ -167,8 +161,7 @@ class ClassroomListItem extends StatelessWidget {
                 onRemoveClassroom(classroom);
                 ScaffoldMessenger.of(context)
                   ..removeCurrentSnackBar()
-                  ..showSnackBar(
-                      const SnackBar(content: Text('Removed successfully.')));
+                  ..showSnackBar(const SnackBar(content: Text('Removed successfully.')));
               }),
         ]),
       ),

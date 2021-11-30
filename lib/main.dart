@@ -6,12 +6,17 @@ import 'category_list.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  if (Platform.isWindows || Platform.isMacOS || Platform.isLinux) {
-    const width = 1024.0;
-    const height = 800.0;
-    setWindowTitle("Student Observations");
-    setWindowMinSize(const Size(width, height));
-    setWindowFrame(const Rect.fromLTWH(50, 50, width, height));
+  try {
+    if (Platform.isWindows || Platform.isMacOS || Platform.isLinux) {
+      const width = 1024.0;
+      const height = 800.0;
+      setWindowTitle("Student Observations");
+      setWindowMinSize(const Size(width, height));
+      setWindowFrame(const Rect.fromLTWH(50, 50, width, height));
+    }
+  } catch (e) {
+    // ignore: avoid_print
+    print('Cannot determine platform: $e');
   }
   runApp(const ObservationsApp());
 }
@@ -25,7 +30,7 @@ class ObservationsApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
         title: 'Student Observations',
-        home: const HomePage(),
+        home: HomePage(),
         theme: ThemeData(
           primarySwatch: color,
         ));
@@ -33,11 +38,14 @@ class ObservationsApp extends StatelessWidget {
 }
 
 class HomePage extends StatelessWidget {
-  const HomePage({Key? key}) : super(key: key);
+  HomePage({Key? key}) : super(key: key);
+
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         title: const Text('Student Observations'),
         actions: [
@@ -61,12 +69,18 @@ class HomePage extends StatelessWidget {
             ),
             ListTile(
               title: const Text('Categories'),
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => CategoryList(),
-                ),
-              ),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => CategoryList(),
+                  ),
+                );
+                final state = _scaffoldKey.currentState;
+                if (state != null && state.isDrawerOpen) {
+                  state.openEndDrawer();
+                }
+              },
             ),
           ],
         ),

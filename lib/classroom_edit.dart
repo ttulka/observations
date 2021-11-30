@@ -2,13 +2,10 @@ import 'package:flutter/material.dart';
 import 'classroom_form.dart';
 import 'domain.dart';
 
-typedef EditClassroom = Function(
-    Classroom oldClassroom, Classroom newClassroom);
+typedef EditClassroom = Function(Classroom classroom);
 
 class EditClassroomDialog extends StatelessWidget {
-  const EditClassroomDialog(
-      {required this.classroom, required this.onEditClassroom, Key? key})
-      : super(key: key);
+  const EditClassroomDialog({required this.classroom, required this.onEditClassroom, Key? key}) : super(key: key);
 
   final Classroom classroom;
   final EditClassroom onEditClassroom;
@@ -21,8 +18,8 @@ class EditClassroomDialog extends StatelessWidget {
       ),
       body: EditClassroomForm(
           classroom: classroom,
-          onEditClassroom: (Classroom oldClassroom, Classroom newClassroom) {
-            onEditClassroom(oldClassroom, newClassroom);
+          onEditClassroom: (Classroom classroom) {
+            onEditClassroom(classroom);
             Navigator.pop(context, true);
           }),
     );
@@ -30,9 +27,7 @@ class EditClassroomDialog extends StatelessWidget {
 }
 
 class EditClassroomForm extends StatefulWidget {
-  const EditClassroomForm(
-      {required this.classroom, required this.onEditClassroom, Key? key})
-      : super(key: key);
+  const EditClassroomForm({required this.classroom, required this.onEditClassroom, Key? key}) : super(key: key);
 
   final Classroom classroom;
   final EditClassroom onEditClassroom;
@@ -71,11 +66,12 @@ class EditClassroomFormState extends State<EditClassroomForm> {
         yearController: yearController,
         descController: descController,
         onSave: () {
-          final newClassroom = Classroom(
-              id: idController.text,
+          final classroom = Classroom(
+              id: widget.classroom.id,
+              name: idController.text,
               year: int.parse(yearController.text),
               description: descController.text);
-          widget.onEditClassroom(widget.classroom, newClassroom);
+          widget.onEditClassroom(classroom);
         }).build(context, _formKey);
   }
 }

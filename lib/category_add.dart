@@ -2,14 +2,14 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart' as quill;
+import 'package:uuid/uuid.dart';
 import 'category_form.dart';
 import 'domain.dart';
 
 typedef AddCategory = Function(Category category);
 
 class AddCategoryDialog extends StatelessWidget {
-  const AddCategoryDialog({required this.onAddCategory, Key? key})
-      : super(key: key);
+  const AddCategoryDialog({required this.onAddCategory, Key? key}) : super(key: key);
 
   final AddCategory onAddCategory;
 
@@ -28,8 +28,7 @@ class AddCategoryDialog extends StatelessWidget {
 }
 
 class AddCategoryForm extends StatefulWidget {
-  const AddCategoryForm({required this.onAddCategory, Key? key})
-      : super(key: key);
+  const AddCategoryForm({required this.onAddCategory, Key? key}) : super(key: key);
 
   final AddCategory onAddCategory;
 
@@ -65,10 +64,8 @@ class AddCategoryFormState extends State<AddCategoryForm> {
         nameController: nameController,
         templateController: templateController,
         onSave: () {
-          final template =
-              jsonEncode(templateController.document.toDelta().toJson());
-          final category =
-              Category(name: nameController.text, template: template);
+          final template = jsonEncode(templateController.document.toDelta().toJson());
+          final category = Category(id: const Uuid().v4(), name: nameController.text, template: template);
           widget.onAddCategory(category);
         }).build(context, _formKey);
   }

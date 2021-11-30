@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:uuid/uuid.dart';
 import 'classroom_form.dart';
 import 'domain.dart';
 
 typedef AddClassroom = Function(Classroom classroom);
 
 class AddClassroomDialog extends StatelessWidget {
-  const AddClassroomDialog({required this.onAddClassroom, Key? key})
-      : super(key: key);
+  const AddClassroomDialog({required this.onAddClassroom, Key? key}) : super(key: key);
 
   final AddClassroom onAddClassroom;
 
@@ -25,8 +25,7 @@ class AddClassroomDialog extends StatelessWidget {
 }
 
 class AddClassroomForm extends StatefulWidget {
-  const AddClassroomForm({required this.onAddClassroom, Key? key})
-      : super(key: key);
+  const AddClassroomForm({required this.onAddClassroom, Key? key}) : super(key: key);
 
   final AddClassroom onAddClassroom;
 
@@ -63,7 +62,8 @@ class AddClassroomFormState extends State<AddClassroomForm> {
         descController: descController,
         onSave: () {
           final classroom = Classroom(
-              id: idController.text,
+              id: const Uuid().v4(),
+              name: idController.text,
               year: int.parse(yearController.text),
               description: descController.text);
           widget.onAddClassroom(classroom);
