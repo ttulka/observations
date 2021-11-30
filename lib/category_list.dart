@@ -1,92 +1,54 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'helpers.dart';
 import 'service.dart';
 import 'domain.dart';
 import 'category_add.dart';
 import 'category_edit.dart';
 
 typedef ListCategories = List<Category> Function();
-typedef RemoveCategory = Function(Category category);
-typedef EditCategory = Function(Category oldCategory, Category newCategory);
-typedef UpCategory = Function(Category category);
-typedef DownCategory = Function(Category category);
+typedef UpdateCategory = Future<void> Function(Category category);
 
 class CategoryList extends StatefulWidget {
   CategoryList({Key? key}) : super(key: key);
 
   final CategoryService _service = CategoryService();
 
-  final List<Category> categories = [];
-
-  void onAddCategory(Category category) {
-    _service.add(category);
-  }
-
-  void onEditCategory(Category oldCategory, Category newCategory) {
-    _service.edit(oldCategory, newCategory);
-  }
-
-  void onRemoveCategory(Category category) {
-    _service.remove(category);
-  }
-
-  void onUpCategory(Category category) {
-    _service.up(category);
-  }
-
-  void onDownCategory(Category category) {
-    _service.down(category);
-  }
-
-  void loadCategories() {
-    categories.clear();
-    categories.addAll(_service.listAll());
-  }
+  Future<void> onAddCategory(Category category) => _service.add(category);
+  Future<void> onEditCategory(Category category) => _service.edit(category);
+  Future<void> onRemoveCategory(Category category) => _service.remove(category);
+  Future<void> onUpCategory(Category category) => _service.up(category);
+  Future<void> onDownCategory(Category category) => _service.down(category);
+  Future<List<Category>> loadCategories() async => await _service.listAll();
 
   @override
   _CategoryListState createState() => _CategoryListState();
 }
 
 class _CategoryListState extends State<CategoryList> {
-  void _handleAddCategory(Category category) {
-    setState(() {
-      widget.onAddCategory(category);
-      widget.loadCategories();
-    });
+  Future<void> _handleAddCategory(Category category) async {
+    await widget.onAddCategory(category);
+    setState(() {});
   }
 
-  void _handleEditCategory(Category newCategory, Category oldCategory) {
-    setState(() {
-      widget.onEditCategory(newCategory, oldCategory);
-      widget.loadCategories();
-    });
+  Future<void> _handleEditCategory(Category category) async {
+    await widget.onEditCategory(category);
+    setState(() {});
   }
 
-  void _handleRemoveCategory(Category category) {
-    setState(() {
-      widget.onRemoveCategory(category);
-      widget.loadCategories();
-    });
+  Future<void> _handleRemoveCategory(Category category) async {
+    await widget.onRemoveCategory(category);
+    setState(() {});
   }
 
-  void _handleUpCategory(Category category) {
-    setState(() {
-      widget.onUpCategory(category);
-      widget.loadCategories();
-    });
+  Future<void> _handleUpCategory(Category category) async {
+    await widget.onUpCategory(category);
+    setState(() {});
   }
 
-  void _handleDownCategory(Category category) {
-    setState(() {
-      widget.onDownCategory(category);
-      widget.loadCategories();
-    });
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    widget.loadCategories();
+  Future<void> _handleDownCategory(Category category) async {
+    await widget.onDownCategory(category);
+    setState(() {});
   }
 
   @override
@@ -95,17 +57,20 @@ class _CategoryListState extends State<CategoryList> {
       appBar: AppBar(
         title: Text(AppLocalizations.of(context)!.listCategoryTitle),
       ),
-      body: ListView(
-        padding: const EdgeInsets.symmetric(vertical: 8.0),
-        children: widget.categories.map((Category category) {
-          return CategoryListItem(
-            category: category,
-            onEditCategory: _handleEditCategory,
-            onRemoveCategory: _handleRemoveCategory,
-            onUpCategory: _handleUpCategory,
-            onDownCategory: _handleDownCategory,
-          );
-        }).toList(),
+      body: buildFutureWidget<List<Category>>(
+        future: widget.loadCategories(),
+        buildWidget: (categories) => ListView(
+          padding: const EdgeInsets.symmetric(vertical: 8.0),
+          children: categories
+              .map((category) => CategoryListItem(
+                    category: category,
+                    onEditCategory: _handleEditCategory,
+                    onRemoveCategory: _handleRemoveCategory,
+                    onUpCategory: _handleUpCategory,
+                    onDownCategory: _handleDownCategory,
+                  ))
+              .toList(),
+        ),
       ),
       floatingActionButton: FloatingActionButton(
           tooltip: AppLocalizations.of(context)!.addCategoryTitle,
@@ -139,14 +104,15 @@ class CategoryListItem extends StatelessWidget {
 
   final Category category;
 
-  final EditCategory onEditCategory;
-  final RemoveCategory onRemoveCategory;
-  final UpCategory onUpCategory;
-  final DownCategory onDownCategory;
+  final UpdateCategory onEditCategory;
+  final UpdateCategory onRemoveCategory;
+  final UpdateCategory onUpCategory;
+  final UpdateCategory onDownCategory;
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
+      onTap: () => _edit(context),
       leading: const CircleAvatar(
         child: Icon(Icons.category),
       ),
@@ -164,37 +130,40 @@ class CategoryListItem extends StatelessWidget {
               splashRadius: 20,
               onPressed: () => onDownCategory(category)),
           IconButton(
-              icon: const Icon(Icons.edit),
-              tooltip: AppLocalizations.of(context)!.editCategoryHint,
-              splashRadius: 20,
-              onPressed: () async {
-                final result = await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => EditCategoryDialog(
-                            category: category,
-                            onEditCategory: onEditCategory,
-                          )),
-                );
-                if (result != null && result) {
-                  ScaffoldMessenger.of(context)
-                    ..removeCurrentSnackBar()
-                    ..showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.editSuccess)));
-                }
-              }),
+            icon: const Icon(Icons.edit),
+            tooltip: AppLocalizations.of(context)!.editCategoryHint,
+            splashRadius: 20,
+            onPressed: () => _edit(context),
+          ),
           IconButton(
               icon: const Icon(Icons.remove_circle_outline),
               tooltip: AppLocalizations.of(context)!.removeCategoryHint,
               splashRadius: 20,
-              onPressed: () {
-                onRemoveCategory(category);
+              onPressed: () async {
+                await onRemoveCategory(category);
                 ScaffoldMessenger.of(context)
                   ..removeCurrentSnackBar()
                   ..showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.removeSuccess)));
               }),
         ]),
       ),
-      title: Text(category.name),
+      title: Text(category.localizedName(AppLocalizations.of(context)!)),
     );
+  }
+
+  Future<void> _edit(BuildContext context) async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => EditCategoryDialog(
+                category: category,
+                onEditCategory: onEditCategory,
+              )),
+    );
+    if (result != null && result) {
+      ScaffoldMessenger.of(context)
+        ..removeCurrentSnackBar()
+        ..showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.editSuccess)));
+    }
   }
 }

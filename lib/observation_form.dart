@@ -24,7 +24,7 @@ class ObservationForm {
         child: TabBarView(
           children: observations.map((o) {
             final tc = quill.QuillController(
-                document: quill.Document.fromJson(jsonDecode(o.content)),
+                document: o.content.isNotEmpty ? quill.Document.fromJson(jsonDecode(o.content)) : quill.Document(),
                 selection: const TextSelection.collapsed(offset: 0));
             templateControllers[o.id] = tc;
             return _newTextAreaField(tc, 1000);

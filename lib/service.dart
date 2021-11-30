@@ -1,3 +1,5 @@
+import 'package:observations/database.dart';
+import 'package:sqflite/sql.dart';
 import 'package:uuid/uuid.dart';
 import 'domain.dart';
 
@@ -34,7 +36,7 @@ final STUDENTS = [
   Student(id: const Uuid().v4(), givenName: 'Bart', familyName: 'Simpson'),
   Student(id: const Uuid().v4(), givenName: 'Milhouse', familyName: 'Van Houten'),
   Student(id: const Uuid().v4(), givenName: 'Martin', familyName: 'Prince'),
-  Student(id: const Uuid().v4(), givenName: 'Nelson', familyName: 'Muntz', mittleName: 'Mandela'),
+  Student(id: const Uuid().v4(), givenName: 'Nelson', familyName: 'Muntz'),
 ];
 
 class StudentService {
@@ -60,59 +62,97 @@ class StudentService {
   }
 }
 
-final CATEGORY1 = Category(
-    id: const Uuid().v4(),
-    name: 'Social behavior',
-    template:
-        r'[{"insert":"Title 1"},{"insert":"\n","attributes":{"header":1}},{"insert":"\n\n\nTitle 2"},{"insert":"\n","attributes":{"header":1}},{"insert":"\n\n\nTitle 3"},{"insert":"\n","attributes":{"header":1}}]');
-final CATEGORY2 = Category(
-    id: const Uuid().v4(),
-    name: 'Work behavior',
-    template:
-        r'[{"insert":"Title A"},{"insert":"\n","attributes":{"header":1}},{"insert":"\n\n\nTitle B"},{"insert":"\n","attributes":{"header":1}},{"insert":"\n\n\nTitle C"},{"insert":"\n","attributes":{"header":1}}]');
-
-final CATEGORIES = [CATEGORY1, CATEGORY2];
-
 class CategoryService {
-  List<Category> listAll() {
-    return CATEGORIES;
+  static const table = 'categories';
+
+  Future<List<Category>> listAll() async {
+    final db = await DatabaseHolder.database;
+    final List<Map<String, dynamic>> maps = await db.query(table, where: 'deleted = FALSE', orderBy: 'priority');
+    return List.generate(maps.length, (i) {
+      return Category(
+        id: maps[i]['id'],
+        name: maps[i]['name'],
+        template: maps[i]['template'],
+      );
+    });
   }
 
-  void add(Category category) {
-    CATEGORIES.add(category);
+  Future<void> add(Category category) async {
+    final db = await DatabaseHolder.database;
+    final prio = await _getMaxPriority() + 1;
+    await db.insert(
+      table,
+      _toMap(category, prio),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
   }
 
-  void edit(Category oldCategory, Category newCategory) {
-    final i = CATEGORIES.indexOf(oldCategory);
-    if (i != -1) {
-      CATEGORIES.remove(oldCategory);
-      CATEGORIES.insert(i, newCategory);
+  Future<void> edit(Category category) async {
+    final db = await DatabaseHolder.database;
+    final prio = await _getPriority(category);
+    await db.update(table, _toMap(category, prio), where: 'id = ?', whereArgs: [category.id]);
+  }
+
+  Future<void> remove(Category category) async {
+    final db = await DatabaseHolder.database;
+    final prio = await _getPriority(category);
+    await db.execute('UPDATE $table SET deleted = TRUE WHERE id = ?', [category.id]);
+    await db.execute('UPDATE $table SET priority = priority - 1 WHERE priority > ?', [prio]);
+  }
+
+  Future<void> up(Category category) async {
+    final db = await DatabaseHolder.database;
+    final prio = await _getPriority(category) - 1;
+    if (prio >= 0) {
+      await db.execute('UPDATE $table SET priority = priority + 1 WHERE priority = ?', [prio]);
+      await db.execute('UPDATE $table SET priority = priority - 1 WHERE id = ?', [category.id]);
     }
   }
 
-  void remove(Category category) {
-    CATEGORIES.remove(category);
+  Future<void> down(Category category) async {
+    final db = await DatabaseHolder.database;
+    final maxPrio = await _getMaxPriority();
+    final prio = await _getPriority(category) + 1;
+    if (prio <= maxPrio) {
+      await db.execute('UPDATE $table SET priority = priority - 1 WHERE priority = ?', [prio]);
+      await db.execute('UPDATE $table SET priority = priority + 1 WHERE id = ?', [category.id]);
+    }
   }
 
-  void up(Category category) {
-    //TODO
+  Future<int> _getPriority(Category category) async {
+    final db = await DatabaseHolder.database;
+    final List<Map<String, dynamic>> maps =
+        await db.query(table, columns: ['priority'], where: 'id = ?', whereArgs: [category.id]);
+    return maps.first.values.first;
   }
 
-  void down(Category category) {
-    //TODO
+  Future<int> _getMaxPriority() async {
+    final db = await DatabaseHolder.database;
+    final List<Map<String, dynamic>> maps = await db.query(table, columns: ['MAX(priority)']);
+    return maps.first.values.first;
+  }
+
+  static Map<String, dynamic> _toMap(Category category, int priority) {
+    return {
+      'id': category.id,
+      'name': category.name,
+      'template': category.template,
+      'priority': priority,
+      'deleted': false,
+    };
   }
 }
 
 final OBSERVATIONS = [
   Observation(
       id: const Uuid().v4(),
-      category: CATEGORY1,
+      category: Category(id: "1", name: "Category 1", template: ""),
       updatedAt: DateTime.now(),
       content:
           r'[{"insert":"Title 1"},{"insert":"\n","attributes":{"header":1}},{"insert":"\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n"}]'),
   Observation(
       id: const Uuid().v4(),
-      category: CATEGORY2,
+      category: Category(id: "2", name: "Category 2", template: ""),
       updatedAt: DateTime.now(),
       content:
           r'[{"insert":"Title 1"},{"insert":"\n","attributes":{"header":1}},{"insert":"\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n"}]'),

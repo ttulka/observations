@@ -5,6 +5,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:window_size/window_size.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'database.dart';
 import 'classroom_list.dart';
 import 'category_list.dart';
 
@@ -25,6 +26,7 @@ void main() {
     // ignore: avoid_print
     print('Cannot determine platform: $e');
   }
+  DatabaseHolder.connectDatabase();
   runApp(const ObservationsApp());
 }
 

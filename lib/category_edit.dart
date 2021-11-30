@@ -7,13 +7,11 @@ import 'package:uuid/uuid.dart';
 import 'category_form.dart';
 import 'domain.dart';
 
-typedef EditCategory = Function(Category oldCategory, Category newCategory);
-
 class EditCategoryDialog extends StatelessWidget {
   const EditCategoryDialog({required this.category, required this.onEditCategory, Key? key}) : super(key: key);
 
   final Category category;
-  final EditCategory onEditCategory;
+  final Function(Category) onEditCategory;
 
   @override
   Widget build(BuildContext context) {
@@ -23,8 +21,8 @@ class EditCategoryDialog extends StatelessWidget {
       ),
       body: EditCategoryForm(
           category: category,
-          onEditCategory: (Category oldCategory, Category newCategory) {
-            onEditCategory(oldCategory, newCategory);
+          onEditCategory: (Category category) async {
+            await onEditCategory(category);
             Navigator.pop(context, true);
           }),
     );
@@ -35,7 +33,7 @@ class EditCategoryForm extends StatefulWidget {
   const EditCategoryForm({required this.category, required this.onEditCategory, Key? key}) : super(key: key);
 
   final Category category;
-  final EditCategory onEditCategory;
+  final Function(Category) onEditCategory;
 
   @override
   EditCategoryFormState createState() => EditCategoryFormState();
@@ -57,21 +55,23 @@ class EditCategoryFormState extends State<EditCategoryForm> {
   @override
   void initState() {
     super.initState();
-    nameController.text = widget.category.name;
     templateController = quill.QuillController(
-        document: quill.Document.fromJson(jsonDecode(widget.category.template)),
+        document: widget.category.template.isNotEmpty
+            ? quill.Document.fromJson(jsonDecode(widget.category.template))
+            : quill.Document(),
         selection: const TextSelection.collapsed(offset: 0));
   }
 
   @override
   Widget build(BuildContext context) {
+    nameController.text = widget.category.localizedName(AppLocalizations.of(context)!);
     return CategoryForm(
         nameController: nameController,
         templateController: templateController,
         onSave: () {
           final template = jsonEncode(templateController.document.toDelta().toJson());
-          final newCategory = Category(id: const Uuid().v4(), name: nameController.text, template: template);
-          widget.onEditCategory(widget.category, newCategory);
+          final category = Category(id: const Uuid().v4(), name: nameController.text, template: template);
+          widget.onEditCategory(category);
         }).build(context, _formKey);
   }
 }

@@ -8,7 +8,7 @@
 PRODUCT_NAME = observations
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.example.observations
+PRODUCT_BUNDLE_IDENTIFIER = com.ttulka.observations
 
 // The copyright displayed in application information
-PRODUCT_COPYRIGHT = Copyright © 2021 com.example. All rights reserved.
+PRODUCT_COPYRIGHT = Created by Tomas Tulka (ttulka.com) under the MIT License.

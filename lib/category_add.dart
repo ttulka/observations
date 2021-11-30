@@ -7,12 +7,10 @@ import 'package:uuid/uuid.dart';
 import 'category_form.dart';
 import 'domain.dart';
 
-typedef AddCategory = Function(Category category);
-
 class AddCategoryDialog extends StatelessWidget {
   const AddCategoryDialog({required this.onAddCategory, Key? key}) : super(key: key);
 
-  final AddCategory onAddCategory;
+  final Function(Category) onAddCategory;
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +29,7 @@ class AddCategoryDialog extends StatelessWidget {
 class AddCategoryForm extends StatefulWidget {
   const AddCategoryForm({required this.onAddCategory, Key? key}) : super(key: key);
 
-  final AddCategory onAddCategory;
+  final Function(Category) onAddCategory;
 
   @override
   AddCategoryFormState createState() => AddCategoryFormState();

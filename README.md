@@ -1,8 +1,7 @@
 # Student Observations
 
 ## TODO
-- internationalization
-- ordering categories (up, down)
+- removal comfirms 
 - validate unique values (classroom ID + year, student ID, etc)
 - storing documents as files
 - saving documents automatically

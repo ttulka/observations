@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:uuid/uuid.dart';
+import 'helpers.dart';
 import 'domain.dart';
 import 'service.dart';
 import 'observation_form.dart';
@@ -21,20 +23,30 @@ class ComposeObservationDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final currentObservations = _observationService.listByStudent(student);
-    final categories = _mergeCategories(_categoryService.listAll(), currentObservations);
-    final observations = _mergeObservations(categories, currentObservations);
-    return DefaultTabController(
-      length: categories.length,
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text('${student.familyName}, ${student.givenName} (${classroom.name})'),
-          bottom: TabBar(
-            tabs: categories.map((c) => Tab(text: c.name)).toList(),
+    return buildFutureWidget<ComposeObservationData>(
+      future: _prepareData(),
+      buildWidget: (data) => DefaultTabController(
+        length: data.categories.length,
+        child: Scaffold(
+          appBar: AppBar(
+            title: Text('${student.familyName}, ${student.givenName} (${classroom.name})'),
+            bottom: TabBar(
+              tabs: data.categories.map((c) => Tab(text: c.localizedName(AppLocalizations.of(context)!))).toList(),
+            ),
           ),
+          body: ComposeObservationForm(onSaveObservation: saveObservation, observations: data.observations),
         ),
-        body: ComposeObservationForm(onSaveObservation: saveObservation, observations: observations),
       ),
+    );
+  }
+
+  Future<ComposeObservationData> _prepareData() async {
+    final currentObservations = _observationService.listByStudent(student);
+    final categories = _mergeCategories(await _categoryService.listAll(), currentObservations);
+    final observations = _mergeObservations(categories, currentObservations);
+    return ComposeObservationData(
+      categories: categories,
+      observations: observations,
     );
   }
 
@@ -54,6 +66,13 @@ class ComposeObservationDialog extends StatelessWidget {
             ))
         .toList();
   }
+}
+
+class ComposeObservationData {
+  ComposeObservationData({required this.categories, required this.observations});
+
+  final List<Category> categories;
+  final List<Observation> observations;
 }
 
 class ComposeObservationForm extends StatefulWidget {

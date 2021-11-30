@@ -1,3 +1,5 @@
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 class Classroom {
   Classroom({required this.id, required this.name, required this.description, required this.year});
 
@@ -8,12 +10,11 @@ class Classroom {
 }
 
 class Student {
-  Student({required this.id, required this.givenName, required this.familyName, this.mittleName});
+  Student({required this.id, required this.givenName, required this.familyName});
 
   final String id;
   final String givenName;
   final String familyName;
-  final String? mittleName;
 }
 
 class Category {
@@ -22,6 +23,17 @@ class Category {
   final String id;
   final String name;
   final String template;
+
+  String localizedName(AppLocalizations localizations) {
+    switch (name) {
+      case '#social':
+        return localizations.categoryDefaultsSocial;
+      case '#work':
+        return localizations.categoryDefaultsWork;
+      default:
+        return name;
+    }
+  }
 }
 
 class Observation {
