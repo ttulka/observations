@@ -4,10 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:window_size/window_size.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'classroom_list.dart';
 import 'category_list.dart';
 
 const appTitle = 'Student Observations';
+const color = Colors.blue;
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,8 +27,6 @@ void main() {
   }
   runApp(const ObservationsApp());
 }
-
-const color = Colors.blue;
 
 class ObservationsApp extends StatelessWidget {
   const ObservationsApp({Key? key}) : super(key: key);
@@ -68,9 +68,7 @@ class HomePage extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.help),
             tooltip: AppLocalizations.of(context)!.menuAbout,
-            onPressed: () {
-              //TODO
-            },
+            onPressed: () => Navigator.of(context).restorablePush(_aboutDialog),
           ),
         ],
       ),
@@ -100,6 +98,30 @@ class HomePage extends StatelessWidget {
                 }
               },
             ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  static Route<Object?> _aboutDialog(BuildContext context, Object? arguments) {
+    final link = AppLocalizations.of(context)!.aboutLink;
+    return DialogRoute<void>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: Center(child: Text(AppLocalizations.of(context)!.aboutTitle)),
+        content: Column(
+          children: [
+            Center(
+              child: InkWell(
+                child: Text(
+                  link,
+                  style: const TextStyle(color: Colors.blue, decoration: TextDecoration.underline),
+                ),
+                onTap: () => launch(link),
+              ),
+            ),
+            Center(child: Text('\n\n' + AppLocalizations.of(context)!.aboutContent, textAlign: TextAlign.center)),
           ],
         ),
       ),

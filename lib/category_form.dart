@@ -19,12 +19,12 @@ class CategoryForm {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              newTextField(context, AppLocalizations.of(context)!.categoryName, nameController, true, 50),
+              _newTextField(context, AppLocalizations.of(context)!.categoryName, nameController, true, 50),
             ],
           ),
         ),
       ),
-      Expanded(child: newTextAreaField(templateController, 1000)),
+      Expanded(child: _newTextAreaField(templateController, 1000)),
       Padding(
         padding: const EdgeInsets.symmetric(vertical: 16),
         child: ElevatedButton(
@@ -39,7 +39,7 @@ class CategoryForm {
     ]);
   }
 
-  Widget newTextField(
+  static Widget _newTextField(
       BuildContext context, String label, TextEditingController controller, bool required, int maxLength,
       {RegExp? filter}) {
     return Padding(
@@ -64,7 +64,7 @@ class CategoryForm {
     );
   }
 
-  Widget newTextAreaField(quill.QuillController controller, int maxLength) {
+  static Widget _newTextAreaField(quill.QuillController controller, int maxLength) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
       child: Column(

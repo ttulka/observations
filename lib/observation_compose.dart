@@ -38,14 +38,14 @@ class ComposeObservationDialog extends StatelessWidget {
     );
   }
 
-  List<Category> _mergeCategories(List<Category> categories, List<Observation> observations) {
+  static List<Category> _mergeCategories(List<Category> categories, List<Observation> observations) {
     final List<Category> results = [];
     results.addAll(categories);
     observations.map((o) => o.category).where((c) => !categories.contains(c)).forEach((c) => results.add(c));
     return results;
   }
 
-  List<Observation> _mergeObservations(List<Category> categories, List<Observation> observations) {
+  static List<Observation> _mergeObservations(List<Category> categories, List<Observation> observations) {
     return categories
         .map((c) => observations.firstWhere(
               (o) => o.category.id == c.id,

@@ -17,8 +17,8 @@ class StudentForm {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            newTextField(context, AppLocalizations.of(context)!.studentFamilyName, familyNameController, true, 50),
-            newTextField(context, AppLocalizations.of(context)!.studentGivenName, givenNameController, true, 50),
+            _newTextField(context, AppLocalizations.of(context)!.studentFamilyName, familyNameController, true, 50),
+            _newTextField(context, AppLocalizations.of(context)!.studentGivenName, givenNameController, true, 50),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 16),
               child: ElevatedButton(
@@ -36,7 +36,7 @@ class StudentForm {
     );
   }
 
-  Widget newTextField(
+  static Widget _newTextField(
       BuildContext context, String label, TextEditingController controller, bool required, int maxLength,
       {RegExp? filter}) {
     return Padding(

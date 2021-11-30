@@ -19,10 +19,10 @@ class ClassroomForm {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            newTextField(context, AppLocalizations.of(context)!.classroomName, nameController, true, 5),
-            newTextField(context, AppLocalizations.of(context)!.classroomYear, yearController, true, 4,
+            _newTextField(context, AppLocalizations.of(context)!.classroomName, nameController, true, 5),
+            _newTextField(context, AppLocalizations.of(context)!.classroomYear, yearController, true, 4,
                 filter: RegExp(r'^\d{4}$')),
-            newTextField(context, AppLocalizations.of(context)!.classroomDescription, descController, false, 50),
+            _newTextField(context, AppLocalizations.of(context)!.classroomDescription, descController, false, 50),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 16),
               child: ElevatedButton(
@@ -40,7 +40,7 @@ class ClassroomForm {
     );
   }
 
-  Widget newTextField(
+  static Widget _newTextField(
       BuildContext context, String label, TextEditingController controller, bool required, int maxLength,
       {RegExp? filter}) {
     return Padding(

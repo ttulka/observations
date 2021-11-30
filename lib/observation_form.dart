@@ -52,7 +52,7 @@ class ObservationForm {
     ]);
   }
 
-  Widget _newTextAreaField(quill.QuillController controller, int maxLength) {
+  static Widget _newTextAreaField(quill.QuillController controller, int maxLength) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
       child: Column(
