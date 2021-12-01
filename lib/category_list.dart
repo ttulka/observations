@@ -104,12 +104,12 @@ class CategoryListItem extends StatelessWidget {
         fit: BoxFit.fill,
         child: Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
           IconButton(
-              icon: const Icon(Icons.arrow_upward),
+              icon: const Icon(Icons.expand_less),
               tooltip: AppLocalizations.of(context)!.listCategoryUp,
               splashRadius: 20,
               onPressed: () => onUpCategory(category)),
           IconButton(
-              icon: const Icon(Icons.arrow_downward),
+              icon: const Icon(Icons.expand_more),
               tooltip: AppLocalizations.of(context)!.listCategoryDown,
               splashRadius: 20,
               onPressed: () => onDownCategory(category)),

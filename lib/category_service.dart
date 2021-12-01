@@ -30,7 +30,7 @@ class CategoryService {
         template: record['template'],
       );
     }
-    return Category(id: categoryId, name: '***', template: '');
+    return Category(id: categoryId, name: '???', template: '');
   }
 
   Future<void> add(Category category) async {

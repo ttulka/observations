@@ -2,6 +2,7 @@ import 'package:intl/intl.dart';
 import 'package:sqflite/sql.dart';
 import 'package:sqflite/sqlite_api.dart';
 import 'database.dart';
+import 'storage.dart';
 import 'category_service.dart';
 import 'student_domain.dart';
 import 'observation_domain.dart';
@@ -15,7 +16,8 @@ class ObservationService {
 
   Future<List<Observation>> listByStudent(Student student) async {
     final Database db = await DatabaseHolder.database;
-    final List<Map<String, dynamic>> maps = await db.query(table, where: 'deleted = FALSE', orderBy: 'updatedAt DESC');
+    final List<Map<String, dynamic>> maps = await db.query(table,
+        where: 'studentId = ? AND deleted = FALSE', whereArgs: [student.id], orderBy: 'updatedAt DESC');
     final List<Observation> results = [];
     for (Map<String, dynamic> map in maps) {
       final category = await _categoryService.getByIdOrEmpty(map['categoryId']);
@@ -28,11 +30,6 @@ class ObservationService {
       ));
     }
     return results;
-  }
-
-  Future<String> _loadContent(String contentId) async {
-    // TODO
-    return '';
   }
 
   Future<Observation?> getById(String observationId) async {
@@ -60,6 +57,7 @@ class ObservationService {
     } else {
       await db.insert(table, _toMap(observation), conflictAlgorithm: ConflictAlgorithm.replace);
     }
+    _storeContent(observation.id, observation.content);
   }
 
   Future<void> remove(Observation observation) async {
@@ -71,6 +69,10 @@ class ObservationService {
     final db = await DatabaseHolder.database;
     await db.execute('UPDATE $table SET deleted = TRUE WHERE studentId = ?', [studentId]);
   }
+
+  Future<void> _storeContent(String id, String content) => FileStorage.store(id, content);
+
+  Future<String> _loadContent(String id) => FileStorage.load(id);
 
   static Map<String, dynamic> _toMap(Observation observation) {
     return {

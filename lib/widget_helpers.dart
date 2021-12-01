@@ -29,7 +29,8 @@ Widget buildFutureWidget<T>({required Future<T> future, required Widget Function
                 const SizedBox(child: CircularProgressIndicator(), width: 60, height: 60),
                 Padding(
                   padding: const EdgeInsets.only(top: 16),
-                  child: Text(AppLocalizations.of(context)!.loading),
+                  child: Text(AppLocalizations.of(context)!.loading,
+                      style: const TextStyle(color: Colors.grey, fontSize: 16.0, backgroundColor: Colors.transparent)),
                 )
               ]),
         );
