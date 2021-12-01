@@ -8,6 +8,7 @@ class FileStorage {
 
   static Future<String> _getDirectory() async {
     Directory dir = await getLibraryDirectory();
+    print("=== STORAGE PATH: " + dir.path);
     return dir.path;
   }
 
@@ -17,6 +18,7 @@ class FileStorage {
   }
 
   static Future<void> store(String id, String content) async {
+    print('=== STORE CONTENT: $content');
     final File file = await _localFile(id);
     await file.writeAsString(content);
   }

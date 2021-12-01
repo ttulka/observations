@@ -18,10 +18,10 @@ class CategoryService {
     });
   }
 
-  Future<Category> getByIdOrEmpty(String categoryId) async {
+  Future<Category> getByIdOrEmpty(String categoryId, {bool includeDeleted = false}) async {
     final Database db = await DatabaseHolder.database;
     final List<Map<String, dynamic>> maps =
-        await db.query(table, where: 'id = ? AND deleted = FALSE', whereArgs: [categoryId]);
+        await db.query(table, where: 'id = ? ${!includeDeleted ? 'AND deleted = FALSE' : ''}', whereArgs: [categoryId]);
     if (maps.isNotEmpty) {
       final record = maps.first;
       return Category(

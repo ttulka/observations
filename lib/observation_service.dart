@@ -20,7 +20,7 @@ class ObservationService {
         where: 'studentId = ? AND deleted = FALSE', whereArgs: [student.id], orderBy: 'updatedAt DESC');
     final List<Observation> results = [];
     for (Map<String, dynamic> map in maps) {
-      final category = await _categoryService.getByIdOrEmpty(map['categoryId']);
+      final category = await _categoryService.getByIdOrEmpty(map['categoryId'], includeDeleted: true);
       results.add(Observation(
         id: map['id'],
         category: category,
@@ -38,7 +38,7 @@ class ObservationService {
         await db.query(table, where: 'id = ? AND deleted = FALSE', whereArgs: [observationId]);
     if (maps.isNotEmpty) {
       final map = maps.first;
-      final category = await _categoryService.getByIdOrEmpty(map['categoryId']);
+      final category = await _categoryService.getByIdOrEmpty(map['categoryId'], includeDeleted: true);
       return Observation(
         id: map['id'],
         category: category,

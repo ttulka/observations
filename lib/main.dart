@@ -5,7 +5,6 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:window_size/window_size.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'database.dart';
 import 'classroom_list.dart';
 import 'category_list.dart';
 
@@ -20,7 +19,7 @@ void main() {
       const height = 800.0;
       setWindowTitle(appTitle);
       setWindowMinSize(const Size(width, height));
-      setWindowFrame(const Rect.fromLTWH(50, 50, width, height));
+      //setWindowFrame(const Rect.fromLTWH(50, 50, width, height));
     }
   } catch (e) {
     // ignore: avoid_print

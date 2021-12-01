@@ -11,6 +11,8 @@
     "loading": "Loading...",
     "alertOk": "OK",
     "alertCancel": "Cancel",
+    "printHint": "Print",
+    "printNotSupported": "Printing is not supported on your platform.",
     "addSuccess": "Added successfully.",
     "editSuccess": "Edited successfully.",
     "removeSuccess": "Removed successfully.",

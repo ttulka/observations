@@ -1,6 +1,12 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:uuid/uuid.dart';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:flutter_quill/flutter_quill.dart' as quill;
+import 'package:printing/printing.dart';
+import 'delta_to_html.dart';
 import 'widget_helpers.dart';
 import 'observation_domain.dart';
 import 'student_domain.dart';
@@ -27,19 +33,73 @@ class ComposeObservationDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return buildFutureWidget<ComposeObservationData>(
       future: _prepareData(),
-      buildWidget: (data) => DefaultTabController(
-        length: data.categories.length,
-        child: Scaffold(
-          appBar: AppBar(
-            title: Text('${student.familyName}, ${student.givenName} (${classroom.name})'),
-            bottom: TabBar(
-              tabs: data.categories.map((c) => Tab(text: c.localizedName(AppLocalizations.of(context)!))).toList(),
+      buildWidget: (data) {
+        Observation? currentObservation = data.observations.isNotEmpty ? data.observations.first : null;
+        return DefaultTabController(
+          length: data.categories.length,
+          child: Scaffold(
+            appBar: AppBar(
+              title: Text('${student.familyName}, ${student.givenName} (${classroom.name})'),
+              bottom: TabBar(
+                tabs: data.categories.map((c) => Tab(text: c.localizedName(AppLocalizations.of(context)!))).toList(),
+                onTap: (index) => currentObservation = data.observations[index],
+              ),
+            ),
+            body: ComposeObservationForm(
+              onSaveObservation: (o) {
+                currentObservation = o;
+                saveObservation(o);
+              },
+              observations: data.observations,
+            ),
+            floatingActionButton: FloatingActionButton(
+              tooltip: AppLocalizations.of(context)!.printHint,
+              child: const Icon(Icons.print),
+              backgroundColor: Colors.grey,
+              onPressed: () => _printDialog(context, currentObservation),
             ),
           ),
-          body: ComposeObservationForm(onSaveObservation: saveObservation, observations: data.observations),
-        ),
-      ),
+        );
+      },
     );
+  }
+
+  Future<void> _printDialog(BuildContext context, Observation? observation) async {
+    if (observation == null) {
+      return;
+    }
+    final info = await Printing.info();
+    if (!info.canPrint) print('=== PRINTING NOT SUPPORTED');
+    if (!info.directPrint) print('=== DIRECT PRINTING NOT SUPPORTED');
+    if (!info.canConvertHtml) print('=== CONVERTING NOT SUPPORTED');
+    if (!info.canPrint || !info.canConvertHtml) {
+      await showAlert(context, AppLocalizations.of(context)!.printNotSupported);
+      return;
+    }
+    final quill.Document d = quill.Document.fromJson(jsonDecode(observation.content));
+    final html = '<html><body>' + _quillDeltaToHtml(d.toDelta()) + '</body></html>';
+    const format = PdfPageFormat.standard;
+    print('=== CONVERTING START ' + format.toString());
+    final futureDoc = Printing.convertHtml(format: format, html: html);
+    print('=== CONVERTING FUTURE END');
+    futureDoc
+      ..timeout(const Duration(seconds: 5))
+      ..then((doc) => Printing.layoutPdf(onLayout: (PdfPageFormat format) => doc));
+
+    // final doc = pw.Document();
+    // doc.addPage(pw.Page(
+    //     pageFormat: PdfPageFormat.a4,
+    //     build: (pw.Context context) {
+    //       return pw.Center(
+    //         child: pw.Text('Hello World'),
+    //       ); // Center
+    //     }));
+    // await Printing.layoutPdf(onLayout: (PdfPageFormat format) async => doc.save());
+  }
+
+  static String _quillDeltaToHtml(quill.Delta delta) {
+    final convertedValue = jsonEncode(delta.toJson());
+    return deltaToHtml(convertedValue);
   }
 
   Future<ComposeObservationData> _prepareData() async {
@@ -104,7 +164,7 @@ class ComposeObservationFormState extends State<ComposeObservationForm> {
       observations: widget.observations,
       onSave: widget.onSaveObservation,
     );
-    return form.build(context, () {
+    return form.build(context, onFinish: () {
       Navigator.pop(context, true);
       form.dispose();
     });

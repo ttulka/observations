@@ -78,3 +78,16 @@ Future<void> removalWithAlert(BuildContext context, Future<void> Function() remo
       ..showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.removeSuccess)));
   }
 }
+
+Future<bool?> showAlert(BuildContext context, String text) => showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        content: Text(text),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(AppLocalizations.of(context)!.alertOk),
+          ),
+        ],
+      ),
+    );

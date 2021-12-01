@@ -18,35 +18,36 @@ class ObservationForm {
     templateControllers.values.forEach((c) => c.dispose());
   }
 
-  Widget build(BuildContext context, Function onFinish) {
+  Widget build(BuildContext context, {required Function onFinish}) {
     return Column(children: [
       Expanded(
         child: TabBarView(
           children: observations.map((o) {
-            final tc = quill.QuillController(
-                document: o.content.isNotEmpty ? quill.Document.fromJson(jsonDecode(o.content)) : quill.Document(),
-                selection: const TextSelection.collapsed(offset: 0));
+            final doc = o.content.isNotEmpty ? quill.Document.fromJson(jsonDecode(o.content)) : quill.Document();
+            final tc = quill.QuillController(document: doc, selection: const TextSelection.collapsed(offset: 0));
             templateControllers[o.id] = tc;
-            return _newTextAreaField(tc, 1000);
+            // watch the changes in the document and save automatically:
+            var last = tc.document.toDelta();
+            tc.addListener(() {
+              var current = tc.document.toDelta();
+              if (last != current) {
+                last = current;
+                final toSave = _prepareToSave(o, tc);
+                onSave(toSave);
+              }
+            });
+            return _newTextAreaField(o, tc, 1000);
           }).toList(),
         ),
       ),
       Padding(
-        padding: const EdgeInsets.only(top: 16, bottom: 32),
+        padding: const EdgeInsets.only(bottom: 32),
         child: ElevatedButton(
           onPressed: () async {
             for (Observation o in observations) {
               final tc = templateControllers[o.id];
               if (tc != null) {
-                final content = jsonEncode(tc.document.toDelta().toJson());
-                final observation = Observation(
-                  id: o.id,
-                  category: o.category,
-                  studentId: o.studentId,
-                  updatedAt: DateTime.now(),
-                  content: content,
-                );
-                await onSave(observation);
+                await onSave(_prepareToSave(o, tc));
               }
             }
             await onFinish();
@@ -58,17 +59,42 @@ class ObservationForm {
     ]);
   }
 
-  static Widget _newTextAreaField(quill.QuillController controller, int maxLength) {
+  static Observation _prepareToSave(Observation observation, quill.QuillController controller) {
+    final content = jsonEncode(controller.document.toDelta().toJson());
+    return Observation(
+      id: observation.id,
+      category: observation.category,
+      studentId: observation.studentId,
+      updatedAt: DateTime.now(),
+      content: content,
+    );
+  }
+
+  static Widget _newTextAreaField(Observation observation, quill.QuillController controller, int maxLength) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
       child: Column(
         children: [
-          quill.QuillToolbar.basic(controller: controller, showImageButton: false, showVideoButton: false),
+          quill.QuillToolbar.basic(
+            controller: controller,
+            showImageButton: false,
+            showVideoButton: false,
+            showCameraButton: false,
+            showListCheck: false,
+            showBackgroundColorButton: false, // it can't be printed
+          ),
           Expanded(
             child: Container(
-              child: quill.QuillEditor.basic(
+              decoration: BoxDecoration(border: Border.all(width: 2.0, color: Colors.grey)),
+              child: quill.QuillEditor(
                 controller: controller,
                 readOnly: false, // true for view only mode
+                autoFocus: true,
+                scrollable: true,
+                focusNode: FocusNode(),
+                scrollController: ScrollController(),
+                padding: const EdgeInsets.all(16.0),
+                expands: true,
               ),
             ),
           )
