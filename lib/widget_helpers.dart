@@ -16,7 +16,7 @@ Widget buildFutureWidget<T>({required Future<T> future, required Widget Function
                 const Icon(Icons.error_outline, color: Colors.red, size: 22),
                 Padding(
                   padding: const EdgeInsets.only(top: 16),
-                  child: Text('Error: ${snapshot.error}', style: const TextStyle(color: Colors.red)),
+                  child: Text('Error: ${snapshot.error}', style: const TextStyle(color: Colors.red, fontSize: 14.0)),
                 )
               ]),
         );
@@ -50,4 +50,30 @@ Widget buildFloatingAddButton(BuildContext context, Widget Function(BuildContext
             ..showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.addSuccess)));
         }
       });
+}
+
+Future<void> removalWithAlert(BuildContext context, Future<void> Function() removeAction) async {
+  final result = await showDialog<bool>(
+    context: context,
+    builder: (BuildContext context) => AlertDialog(
+      title: Text(AppLocalizations.of(context)!.removeAlertTitle),
+      content: Text(AppLocalizations.of(context)!.removeAlertText),
+      actions: <Widget>[
+        TextButton(
+          onPressed: () => Navigator.pop(context, false),
+          child: Text(AppLocalizations.of(context)!.alertCancel),
+        ),
+        TextButton(
+          onPressed: () => Navigator.pop(context, true),
+          child: Text(AppLocalizations.of(context)!.alertOk),
+        ),
+      ],
+    ),
+  );
+  if (result != null && result) {
+    await removeAction();
+    ScaffoldMessenger.of(context)
+      ..removeCurrentSnackBar()
+      ..showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.removeSuccess)));
+  }
 }

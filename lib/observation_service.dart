@@ -18,10 +18,10 @@ class ObservationService {
     final List<Map<String, dynamic>> maps = await db.query(table, where: 'deleted = FALSE', orderBy: 'updatedAt DESC');
     final List<Observation> results = [];
     for (Map<String, dynamic> map in maps) {
-      final category = await _categoryService.getById(map['categoryId']);
+      final category = await _categoryService.getByIdOrEmpty(map['categoryId']);
       results.add(Observation(
         id: map['id'],
-        category: category!,
+        category: category,
         studentId: student.id,
         updatedAt: _dateFormat.parse(map['updatedAt']),
         content: await _loadContent(map['id']),
@@ -41,10 +41,10 @@ class ObservationService {
         await db.query(table, where: 'id = ? AND deleted = FALSE', whereArgs: [observationId]);
     if (maps.isNotEmpty) {
       final map = maps.first;
-      final category = await _categoryService.getById(map['categoryId']);
+      final category = await _categoryService.getByIdOrEmpty(map['categoryId']);
       return Observation(
         id: map['id'],
-        category: category!,
+        category: category,
         studentId: map['studentId'],
         updatedAt: _dateFormat.parse(map['updatedAt']),
         content: await _loadContent(map['id']),

@@ -20,14 +20,15 @@ class StudentForm {
             _newTextField(context, AppLocalizations.of(context)!.studentFamilyName, familyNameController, true, 50),
             _newTextField(context, AppLocalizations.of(context)!.studentGivenName, givenNameController, true, 50),
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16),
+              padding: const EdgeInsets.only(top: 16, bottom: 32),
               child: ElevatedButton(
                 onPressed: () {
                   if (formKey.currentState!.validate()) {
                     onSave();
                   }
                 },
-                child: Text(AppLocalizations.of(context)!.formSave),
+                style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16)),
+                child: Text(AppLocalizations.of(context)!.formSave, style: const TextStyle(fontSize: 22.0)),
               ),
             ),
           ],

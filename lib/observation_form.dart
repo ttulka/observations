@@ -14,7 +14,7 @@ class ObservationForm {
 
   final Map<String, quill.QuillController> templateControllers = {};
 
-  dispose() {
+  void dispose() {
     templateControllers.values.forEach((c) => c.dispose());
   }
 
@@ -32,9 +32,8 @@ class ObservationForm {
         ),
       ),
       Padding(
-        padding: const EdgeInsets.symmetric(vertical: 16),
+        padding: const EdgeInsets.only(top: 16, bottom: 32),
         child: ElevatedButton(
-          child: Text(AppLocalizations.of(context)!.formSave),
           onPressed: () async {
             for (Observation o in observations) {
               final tc = templateControllers[o.id];
@@ -52,6 +51,8 @@ class ObservationForm {
             }
             await onFinish();
           },
+          style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16)),
+          child: Text(AppLocalizations.of(context)!.formSave, style: const TextStyle(fontSize: 22.0)),
         ),
       ),
     ]);

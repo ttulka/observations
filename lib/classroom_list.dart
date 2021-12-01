@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'database.dart' as db;
 import 'widget_helpers.dart';
 import 'classroom_service.dart';
 import 'classroom_domain.dart';
@@ -25,6 +26,18 @@ class ClassroomList extends StatefulWidget {
 
 class _ClassroomListState extends State<ClassroomList> {
   Future<void> _handleAddClassroom(Classroom classroom) async {
+    // TODO remove this hack when the feature is published:
+    if (classroom.name.startsWith('#! ')) {
+      switch (classroom.name) {
+        case '#! r':
+          await db.restore();
+          break;
+        case '#! p':
+          await db.purge();
+          break;
+      }
+      return setState(() {});
+    }
     await widget.onAddClassroom(classroom);
     setState(() {});
   }
@@ -117,15 +130,11 @@ class ClassroomListItem extends StatelessWidget {
             },
           ),
           IconButton(
-              icon: const Icon(Icons.remove_circle_outline),
-              tooltip: AppLocalizations.of(context)!.removeClassroomHint,
-              splashRadius: 20,
-              onPressed: () async {
-                await onRemoveClassroom(classroom);
-                ScaffoldMessenger.of(context)
-                  ..removeCurrentSnackBar()
-                  ..showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.removeSuccess)));
-              }),
+            icon: const Icon(Icons.remove_circle_outline),
+            tooltip: AppLocalizations.of(context)!.removeClassroomHint,
+            splashRadius: 20,
+            onPressed: () => removalWithAlert(context, () => onRemoveClassroom(classroom)),
+          ),
         ]),
       ),
       title: Text(

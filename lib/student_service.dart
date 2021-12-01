@@ -24,21 +24,6 @@ class StudentService {
     });
   }
 
-  Future<Student?> getById(String studentId) async {
-    final Database db = await DatabaseHolder.database;
-    final List<Map<String, dynamic>> maps =
-        await db.query(table, where: 'id = ? AND deleted = FALSE', whereArgs: [studentId]);
-    if (maps.isNotEmpty) {
-      final map = maps.first;
-      return Student(
-        id: map['id'],
-        familyName: map['familyName'],
-        givenName: map['givenName'],
-        classroomId: map['classroomId'],
-      );
-    }
-  }
-
   Future<void> add(Student student) async {
     final Database db = await DatabaseHolder.database;
     await db.insert(table, _toMap(student), conflictAlgorithm: ConflictAlgorithm.replace);

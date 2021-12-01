@@ -120,15 +120,11 @@ class CategoryListItem extends StatelessWidget {
             onPressed: () => _edit(context),
           ),
           IconButton(
-              icon: const Icon(Icons.remove_circle_outline),
-              tooltip: AppLocalizations.of(context)!.removeCategoryHint,
-              splashRadius: 20,
-              onPressed: () async {
-                await onRemoveCategory(category);
-                ScaffoldMessenger.of(context)
-                  ..removeCurrentSnackBar()
-                  ..showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.removeSuccess)));
-              }),
+            icon: const Icon(Icons.remove_circle_outline),
+            tooltip: AppLocalizations.of(context)!.removeCategoryHint,
+            splashRadius: 20,
+            onPressed: () => removalWithAlert(context, () => onRemoveCategory(category)),
+          ),
         ]),
       ),
       title: Text(category.localizedName(AppLocalizations.of(context)!)),

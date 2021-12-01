@@ -21,9 +21,7 @@ class ComposeObservationDialog extends StatelessWidget {
   final _observationService = ObservationService();
   final _categoryService = CategoryService();
 
-  void saveObservation(Observation observation) {
-    _observationService.save(observation);
-  }
+  Future<void> saveObservation(Observation observation) => _observationService.save(observation);
 
   @override
   Widget build(BuildContext context) {
@@ -102,9 +100,13 @@ class ComposeObservationForm extends StatefulWidget {
 class ComposeObservationFormState extends State<ComposeObservationForm> {
   @override
   Widget build(BuildContext context) {
-    return ObservationForm(
+    final form = ObservationForm(
       observations: widget.observations,
       onSave: widget.onSaveObservation,
-    ).build(context, () => Navigator.pop(context, true));
+    );
+    return form.build(context, () {
+      Navigator.pop(context, true);
+      form.dispose();
+    });
   }
 }

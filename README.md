@@ -1,9 +1,8 @@
 # Student Observations
 
 ## TODO
-- removal comfirms 
-- validate unique values (classroom ID + year, student ID, etc)
 - storing documents as files
+- validate unique values (classroom ID + year, student ID, etc)
 - saving documents automatically
 - printing documents
 - exporting observations as PDF

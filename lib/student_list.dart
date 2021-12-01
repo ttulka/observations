@@ -83,10 +83,17 @@ class StudentListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      onTap: () => Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => ComposeObservationDialog(student: student, classroom: classroom)),
-      ),
+      onTap: () async {
+        final result = await Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => ComposeObservationDialog(student: student, classroom: classroom)),
+        );
+        if (result != null && result) {
+          ScaffoldMessenger.of(context)
+            ..removeCurrentSnackBar()
+            ..showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.editSuccess)));
+        }
+      },
       leading: const CircleAvatar(
         child: Icon(Icons.face),
       ),
@@ -101,10 +108,7 @@ class StudentListItem extends StatelessWidget {
                 final result = await Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => EditStudentDialog(
-                            student: student,
-                            onEditStudent: onEditStudent,
-                          )),
+                      builder: (context) => EditStudentDialog(student: student, onEditStudent: onEditStudent)),
                 );
                 if (result != null && result) {
                   ScaffoldMessenger.of(context)
@@ -113,15 +117,11 @@ class StudentListItem extends StatelessWidget {
                 }
               }),
           IconButton(
-              icon: const Icon(Icons.remove_circle_outline),
-              tooltip: AppLocalizations.of(context)!.removeStudentHint,
-              splashRadius: 20,
-              onPressed: () async {
-                await onRemoveStudent(student);
-                ScaffoldMessenger.of(context)
-                  ..removeCurrentSnackBar()
-                  ..showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.removeSuccess)));
-              }),
+            icon: const Icon(Icons.remove_circle_outline),
+            tooltip: AppLocalizations.of(context)!.removeStudentHint,
+            splashRadius: 20,
+            onPressed: () => removalWithAlert(context, () => onRemoveStudent(student)),
+          ),
         ]),
       ),
       title: Text('${student.familyName}, ${student.givenName}'),

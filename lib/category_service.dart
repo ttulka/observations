@@ -18,7 +18,7 @@ class CategoryService {
     });
   }
 
-  Future<Category?> getById(String categoryId) async {
+  Future<Category> getByIdOrEmpty(String categoryId) async {
     final Database db = await DatabaseHolder.database;
     final List<Map<String, dynamic>> maps =
         await db.query(table, where: 'id = ? AND deleted = FALSE', whereArgs: [categoryId]);
@@ -30,6 +30,7 @@ class CategoryService {
         template: record['template'],
       );
     }
+    return Category(id: categoryId, name: '***', template: '');
   }
 
   Future<void> add(Category category) async {
