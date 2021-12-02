@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:uuid/uuid.dart';
+import 'storage.dart';
 
 class DatabaseHolder {
   static Database? _database;
@@ -34,6 +35,7 @@ class DatabaseHolder {
             "INSERT INTO categories VALUES ('${const Uuid().v4()}', '#social', '', 0, FALSE), ('${const Uuid().v4()}', '#work', '', 1, FALSE)");
         await db.execute("INSERT INTO properties VALUES ('version', '0')");
         await db.execute("INSERT INTO properties VALUES ('autosave', '1')");
+        await db.execute("INSERT INTO properties VALUES ('headers', '1')");
 
         if (!kReleaseMode) {
           await generateFakeData(db);
@@ -62,9 +64,9 @@ Future<void> restore() async {
 Future<void> purge() async {
   final Database db = await DatabaseHolder.database;
   final results = await db.query('observations', columns: ['id'], where: 'deleted = TRUE');
-  results.map((m) => m['id']).forEach((id) {
-    // TODO delete files
-  });
+  for (Map<String, Object?> m in results) {
+    await FileStorage.delete(m['id'].toString());
+  }
   await db.delete('observations', where: 'deleted = TRUE');
   await db.delete('students', where: 'deleted = TRUE');
   await db.delete('classrooms', where: 'deleted = TRUE');

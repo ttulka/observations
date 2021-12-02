@@ -20,6 +20,12 @@ Future<void> execPreviewAction(BuildContext context, String cmd) async {
     case '#! a1':
       await db.updateProperty('autosave', '1');
       break;
+    case '#! h0':
+      await db.updateProperty('headers', '0');
+      break;
+    case '#! h1':
+      await db.updateProperty('headers', '1');
+      break;
     case '#! i':
       final dbPath = (await db.DatabaseHolder.database).path;
       final storagePath = await FileStorage.directory;

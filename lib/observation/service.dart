@@ -124,6 +124,16 @@ class ObservationService {
     return true;
   }
 
+  Future<bool> headersActive() async {
+    final Database db = await DatabaseHolder.database;
+    final List<Map<String, dynamic>> maps = await db.query('properties', columns: ['value'], where: "key = 'headers'");
+    if (maps.isNotEmpty) {
+      final map = maps.first;
+      return map['value'] == '1';
+    }
+    return true;
+  }
+
   Future<void> _storeContent(String id, String content) => FileStorage.store(id, content);
 
   Future<String> _loadContent(String id) => FileStorage.load(id);

@@ -17,10 +17,16 @@ class FileStorage {
     return File('$dir/$id');
   }
 
-  static Future<void> store(String id, String content) async {
+  static Future<bool> store(String id, String content) async {
     print('=== STORE CONTENT: $content');
-    final File file = await _localFile(id);
-    await file.writeAsString(content);
+    try {
+      final File file = await _localFile(id);
+      await file.writeAsString(content);
+      return true;
+    } catch (e) {
+      print(e);
+      return false;
+    }
   }
 
   static Future<String> load(String id) async {
@@ -33,7 +39,22 @@ class FileStorage {
       }
     } catch (e) {
       print(e);
-      return 'Error: $e';
+      return '[{"insert":"Error: ${e.toString().replaceAll('"', "'")}","attributes":{"color":"#ff0000"}},{"insert":"\\n"}]';
+    }
+  }
+
+  static Future<bool> delete(String id) async {
+    try {
+      final File file = await _localFile(id);
+      if (file.existsSync()) {
+        await file.delete();
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      print(e);
+      return false;
     }
   }
 

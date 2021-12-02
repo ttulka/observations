@@ -28,6 +28,7 @@ class ComposeObservationDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final autosave = _observationService.autosaveActive();
+    final headers = _observationService.headersActive();
     return buildFutureWidget<List<Observation>>(
       future: _observationService.prepareAllByStudent(student),
       buildWidget: (observations) {
@@ -55,7 +56,7 @@ class ComposeObservationDialog extends StatelessWidget {
               tooltip: AppLocalizations.of(context)!.printHint,
               child: const Icon(Icons.print),
               backgroundColor: Colors.grey,
-              onPressed: () => _printDialog(context, currentObservation),
+              onPressed: () => _printDialog(context, currentObservation, headers),
             ),
           ),
         );
@@ -63,7 +64,7 @@ class ComposeObservationDialog extends StatelessWidget {
     );
   }
 
-  Future<void> _printDialog(BuildContext context, Observation? observation) async {
+  Future<void> _printDialog(BuildContext context, Observation? observation, Future<bool> obtainHeaders) async {
     if (observation == null) {
       return;
     }
@@ -75,23 +76,27 @@ class ComposeObservationDialog extends StatelessWidget {
       await showAlert(context, AppLocalizations.of(context)!.printNotSupported);
       return;
     }
-    _toPdf(observation.content)
+    _toPdf(observation.content, student, classroom, await obtainHeaders)
         .timeout(const Duration(seconds: 5))
         .then((doc) => Printing.layoutPdf(onLayout: (PdfPageFormat format) => doc));
+  }
+
+  static Future<Uint8List> _toPdf(String jsonContent, Student student, Classroom classroom, bool headers) async {
+    final quill.Document d =
+        jsonContent.isNotEmpty ? quill.Document.fromJson(jsonDecode(jsonContent)) : quill.Document();
+    final html = _quillDeltaToHtml(d.toDelta());
+    final header = headers
+        ? '<p style="border: 2px solid grey; text-align: center; padding: 5px">${student.familyName}, ${student.givenName} (${classroom.name})</p>'
+        : '';
+    return Printing.convertHtml(
+      format: PdfPageFormat.standard,
+      html: '<html><body>$header$html</body></html>',
+    );
   }
 
   static String _quillDeltaToHtml(quill.Delta delta) {
     final convertedValue = jsonEncode(delta.toJson());
     return deltaToHtml(convertedValue);
-  }
-
-  static Future<Uint8List> _toPdf(String jsonContent) async {
-    final quill.Document d = quill.Document.fromJson(jsonDecode(jsonContent));
-    final html = _quillDeltaToHtml(d.toDelta());
-    return Printing.convertHtml(
-      format: PdfPageFormat.standard,
-      html: '<html><body>$html</body></html>',
-    );
   }
 }
 
