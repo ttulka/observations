@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import '../persistence/database.dart' as db;
+import '../preview_features.dart';
 import '../utils/widget_helpers.dart';
 import 'service.dart';
 import 'domain.dart';
@@ -25,17 +25,10 @@ class ClassroomList extends StatefulWidget {
 }
 
 class _ClassroomListState extends State<ClassroomList> {
-  Future<void> _handleAddClassroom(Classroom classroom) async {
+  Future<void> _handleAddClassroom(Classroom classroom, BuildContext context) async {
     // TODO remove this hack when the feature is published:
     if (classroom.name.startsWith('#! ')) {
-      switch (classroom.name) {
-        case '#! r':
-          await db.restore();
-          break;
-        case '#! p':
-          await db.purge();
-          break;
-      }
+      execPreviewAction(context, classroom.name);
       return setState(() {});
     }
     await widget.onAddClassroom(classroom);
@@ -62,8 +55,8 @@ class _ClassroomListState extends State<ClassroomList> {
           children: _buildItems(categories),
         ),
       ),
-      floatingActionButton:
-          buildFloatingAddButton(context, (c) => AddClassroomDialog(onAddClassroom: _handleAddClassroom)),
+      floatingActionButton: buildFloatingAddButton(
+          context, (c) => AddClassroomDialog(onAddClassroom: (c) => _handleAddClassroom(c, context))),
     );
   }
 

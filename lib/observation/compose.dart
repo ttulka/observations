@@ -3,7 +3,6 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:pdf/pdf.dart';
-import 'package:pdf/widgets.dart' as pw;
 import 'package:flutter_quill/flutter_quill.dart' as quill;
 import 'package:printing/printing.dart';
 import '../utils/delta_to_html.dart';
@@ -28,6 +27,7 @@ class ComposeObservationDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final autosave = _observationService.autosaveActive();
     return buildFutureWidget<List<Observation>>(
       future: _observationService.prepareAllByStudent(student),
       buildWidget: (observations) {
@@ -44,11 +44,12 @@ class ComposeObservationDialog extends StatelessWidget {
               ),
             ),
             body: ComposeObservationForm(
+              observations: observations,
               onSaveObservation: (o) {
                 currentObservation = o;
                 saveObservation(o);
               },
-              observations: observations,
+              obtainAutosave: autosave,
             ),
             floatingActionButton: FloatingActionButton(
               tooltip: AppLocalizations.of(context)!.printHint,
@@ -95,11 +96,13 @@ class ComposeObservationDialog extends StatelessWidget {
 }
 
 class ComposeObservationForm extends StatefulWidget {
-  const ComposeObservationForm({required this.onSaveObservation, required this.observations, Key? key})
+  const ComposeObservationForm(
+      {required this.onSaveObservation, required this.observations, required this.obtainAutosave, Key? key})
       : super(key: key);
 
   final SaveObservation onSaveObservation;
   final List<Observation> observations;
+  final Future<bool> obtainAutosave;
 
   @override
   ComposeObservationFormState createState() => ComposeObservationFormState();
@@ -108,13 +111,19 @@ class ComposeObservationForm extends StatefulWidget {
 class ComposeObservationFormState extends State<ComposeObservationForm> {
   @override
   Widget build(BuildContext context) {
-    final form = ObservationForm(
-      observations: widget.observations,
-      onSave: widget.onSaveObservation,
+    return buildFutureWidget<bool>(
+      future: widget.obtainAutosave,
+      buildWidget: (autosave) {
+        final form = ObservationForm(
+          observations: widget.observations,
+          onSave: widget.onSaveObservation,
+          autosave: autosave,
+        );
+        return form.build(context, onFinish: () {
+          Navigator.pop(context, true);
+          form.dispose();
+        });
+      },
     );
-    return form.build(context, onFinish: () {
-      Navigator.pop(context, true);
-      form.dispose();
-    });
   }
 }

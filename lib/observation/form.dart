@@ -7,11 +7,13 @@ import 'package:flutter_quill/flutter_quill.dart' as quill;
 import 'domain.dart';
 
 class ObservationForm {
-  ObservationForm({required this.observations, required this.onSave});
+  ObservationForm({required this.observations, required this.onSave, required this.autosave});
 
   final List<Observation> observations;
 
   final Function(Observation) onSave;
+
+  final bool autosave;
 
   final Map<String, quill.QuillController> templateControllers = {};
 
@@ -28,19 +30,9 @@ class ObservationForm {
             final tc = quill.QuillController(document: doc, selection: const TextSelection.collapsed(offset: 0));
             templateControllers[o.id] = tc;
 
-            // (autosave) watch the changes in the document and save automatically:
-            Timer timer = Timer(const Duration(), () {});
-            var lastDelta = tc.document.toDelta();
-            tc.addListener(() {
-              if (timer.isActive) timer.cancel(); // reschedule the saving future
-              timer = Timer(const Duration(seconds: 1), () async {
-                final delta = tc.document.toDelta(); // any change to save?
-                if (delta != lastDelta) {
-                  lastDelta = delta;
-                  await onSave(_prepareToSave(o, delta));
-                }
-              });
-            });
+            if (autosave) {
+              _initAutosave(tc, o);
+            }
             return _newTextAreaField(o, tc, 1000);
           }).toList(),
         ),
@@ -62,6 +54,22 @@ class ObservationForm {
         ),
       ),
     ]);
+  }
+
+  /// Watch the changes in the document and save automatically (autosave)
+  void _initAutosave(quill.QuillController controller, Observation observation) {
+    Timer timer = Timer(const Duration(), () {});
+    var lastDelta = controller.document.toDelta();
+    controller.addListener(() {
+      if (timer.isActive) timer.cancel(); // reschedule the saving future
+      timer = Timer(const Duration(seconds: 1), () async {
+        final delta = controller.document.toDelta(); // any change to save?
+        if (delta != lastDelta) {
+          lastDelta = delta;
+          await onSave(_prepareToSave(observation, delta));
+        }
+      });
+    });
   }
 
   static Observation _prepareToSave(Observation observation, quill.Delta delta) {

@@ -45,6 +45,11 @@ class DatabaseHolder {
   }
 }
 
+Future<void> updateProperty(String key, String value) async {
+  final Database db = await DatabaseHolder.database;
+  db.update('properties', {'value': value}, where: 'key = ?', whereArgs: [key]);
+}
+
 /// Restore all soft-deleted data
 Future<void> restore() async {
   final Database db = await DatabaseHolder.database;

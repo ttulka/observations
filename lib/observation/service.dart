@@ -19,7 +19,10 @@ class ObservationService {
   Future<List<Observation>> listByStudent(Student student) async {
     final Database db = await DatabaseHolder.database;
     final List<Map<String, dynamic>> maps = await db.query(table,
-        where: 'studentId = ? AND deleted = FALSE', whereArgs: [student.id], orderBy: 'updatedAt DESC');
+        columns: ['id', 'categoryId', 'updatedAt'],
+        where: 'studentId = ? AND deleted = FALSE',
+        whereArgs: [student.id],
+        orderBy: 'updatedAt DESC');
     final List<Observation> results = [];
     for (Map<String, dynamic> map in maps) {
       final category = await _categoryService.getByIdOrEmpty(map['categoryId'], includeDeleted: true);
@@ -72,8 +75,10 @@ class ObservationService {
 
   Future<Observation?> getById(String observationId) async {
     final Database db = await DatabaseHolder.database;
-    final List<Map<String, dynamic>> maps =
-        await db.query(table, where: 'id = ? AND deleted = FALSE', whereArgs: [observationId]);
+    final List<Map<String, dynamic>> maps = await db.query(table,
+        columns: ['id', 'categoryId', 'studentId', 'updatedAt'],
+        where: 'id = ? AND deleted = FALSE',
+        whereArgs: [observationId]);
     if (maps.isNotEmpty) {
       final map = maps.first;
       final category = await _categoryService.getByIdOrEmpty(map['categoryId'], includeDeleted: true);
@@ -99,13 +104,23 @@ class ObservationService {
   }
 
   Future<void> remove(Observation observation) async {
-    final db = await DatabaseHolder.database;
+    final Database db = await DatabaseHolder.database;
     await db.execute('UPDATE $table SET deleted = TRUE WHERE id = ?', [observation.id]);
   }
 
   Future<void> removeAllByStudentId(String studentId) async {
-    final db = await DatabaseHolder.database;
+    final Database db = await DatabaseHolder.database;
     await db.execute('UPDATE $table SET deleted = TRUE WHERE studentId = ?', [studentId]);
+  }
+
+  Future<bool> autosaveActive() async {
+    final Database db = await DatabaseHolder.database;
+    final List<Map<String, dynamic>> maps = await db.query('properties', columns: ['value'], where: "key = 'autosave'");
+    if (maps.isNotEmpty) {
+      final map = maps.first;
+      return map['value'] == '1';
+    }
+    return true;
   }
 
   Future<void> _storeContent(String id, String content) => FileStorage.store(id, content);
