@@ -4,12 +4,10 @@ import 'package:uuid/uuid.dart';
 import 'form.dart';
 import 'domain.dart';
 
-typedef AddClassroom = Function(Classroom classroom);
-
 class AddClassroomDialog extends StatelessWidget {
-  const AddClassroomDialog({required this.onAddClassroom, Key? key}) : super(key: key);
+  const AddClassroomDialog({required this.addClassroom, Key? key}) : super(key: key);
 
-  final AddClassroom onAddClassroom;
+  final Future<bool> Function(Classroom classroom) addClassroom;
 
   @override
   Widget build(BuildContext context) {
@@ -18,8 +16,8 @@ class AddClassroomDialog extends StatelessWidget {
         title: Text(AppLocalizations.of(context)!.addClassroomTitle),
       ),
       body: AddClassroomForm(onAddClassroom: (Classroom classroom) async {
-        await onAddClassroom(classroom);
-        Navigator.pop(context, true);
+        final result = await addClassroom(classroom);
+        Navigator.pop(context, result);
       }),
     );
   }
@@ -28,7 +26,7 @@ class AddClassroomDialog extends StatelessWidget {
 class AddClassroomForm extends StatefulWidget {
   const AddClassroomForm({required this.onAddClassroom, Key? key}) : super(key: key);
 
-  final AddClassroom onAddClassroom;
+  final Function(Classroom classroom) onAddClassroom;
 
   @override
   AddClassroomFormState createState() => AddClassroomFormState();

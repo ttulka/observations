@@ -23,7 +23,7 @@ class ComposeObservationDialog extends StatelessWidget {
 
   final _observationService = ObservationService();
 
-  Future<void> saveObservation(Observation observation) => _observationService.save(observation);
+  Future<bool> saveObservation(Observation observation) => _observationService.save(observation);
 
   @override
   Widget build(BuildContext context) {

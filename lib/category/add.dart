@@ -8,9 +8,9 @@ import 'form.dart';
 import 'domain.dart';
 
 class AddCategoryDialog extends StatelessWidget {
-  const AddCategoryDialog({required this.onAddCategory, Key? key}) : super(key: key);
+  const AddCategoryDialog({required this.addCategory, Key? key}) : super(key: key);
 
-  final Function(Category) onAddCategory;
+  final Future<bool> Function(Category) addCategory;
 
   @override
   Widget build(BuildContext context) {
@@ -19,8 +19,8 @@ class AddCategoryDialog extends StatelessWidget {
         title: Text(AppLocalizations.of(context)!.addCategoryTitle),
       ),
       body: AddCategoryForm(onAddCategory: (Category category) async {
-        await onAddCategory(category);
-        Navigator.pop(context, true);
+        final result = await addCategory(category);
+        Navigator.pop(context, result);
       }),
     );
   }

@@ -92,25 +92,26 @@ class ObservationService {
     }
   }
 
-  Future<void> save(Observation observation) async {
+  Future<bool> save(Observation observation) async {
     final Database db = await DatabaseHolder.database;
     final found = await getById(observation.id);
-    if (found != null) {
-      await db.update(table, _toMap(observation), where: 'id = ?', whereArgs: [observation.id]);
-    } else {
-      await db.insert(table, _toMap(observation), conflictAlgorithm: ConflictAlgorithm.replace);
-    }
-    _storeContent(observation.id, observation.content);
+    final result = found != null
+        ? await db.update(table, _toMap(observation), where: 'id = ?', whereArgs: [observation.id])
+        : await db.insert(table, _toMap(observation), conflictAlgorithm: ConflictAlgorithm.replace);
+    await _storeContent(observation.id, observation.content);
+    return 0 != result;
   }
 
-  Future<void> remove(Observation observation) async {
+  Future<bool> remove(Observation observation) async {
     final Database db = await DatabaseHolder.database;
     await db.execute('UPDATE $table SET deleted = TRUE WHERE id = ?', [observation.id]);
+    return true;
   }
 
-  Future<void> removeAllByStudentId(String studentId) async {
+  Future<bool> removeAllByStudentId(String studentId) async {
     final Database db = await DatabaseHolder.database;
     await db.execute('UPDATE $table SET deleted = TRUE WHERE studentId = ?', [studentId]);
+    return true;
   }
 
   Future<bool> autosaveActive() async {

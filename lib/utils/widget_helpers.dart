@@ -53,7 +53,7 @@ Widget buildFloatingAddButton(BuildContext context, Widget Function(BuildContext
       });
 }
 
-Future<void> removalWithAlert(BuildContext context, Future<void> Function() removeAction) async {
+Future<void> removalWithAlert(BuildContext context, Future<bool> Function() removeAction) async {
   final result = await showDialog<bool>(
     context: context,
     builder: (BuildContext context) => AlertDialog(
@@ -72,10 +72,11 @@ Future<void> removalWithAlert(BuildContext context, Future<void> Function() remo
     ),
   );
   if (result != null && result) {
-    await removeAction();
-    ScaffoldMessenger.of(context)
-      ..removeCurrentSnackBar()
-      ..showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.removeSuccess)));
+    if (await removeAction()) {
+      ScaffoldMessenger.of(context)
+        ..removeCurrentSnackBar()
+        ..showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.removeSuccess)));
+    }
   }
 }
 

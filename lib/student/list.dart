@@ -8,7 +8,7 @@ import 'add.dart';
 import 'edit.dart';
 import '../observation/compose.dart';
 
-typedef UpdateStudent = Function(Student student);
+typedef UpdateStudent = Future<bool> Function(Student student);
 
 class StudentList extends StatefulWidget {
   StudentList({required this.classroom, Key? key}) : super(key: key);
@@ -17,9 +17,9 @@ class StudentList extends StatefulWidget {
 
   final StudentService _service = StudentService();
 
-  Future<void> onAddStudent(Student student) => _service.add(student);
-  Future<void> onEditStudent(Student student) => _service.edit(student);
-  Future<void> onRemoveStudent(Student student) => _service.remove(student);
+  Future<bool> addStudent(Student student) => _service.add(student);
+  Future<bool> editStudent(Student student) => _service.edit(student);
+  Future<bool> removeStudent(Student student) => _service.remove(student);
   Future<List<Student>> loadStudents() => _service.listByClassroom(classroom);
 
   @override
@@ -27,19 +27,22 @@ class StudentList extends StatefulWidget {
 }
 
 class _StudentListState extends State<StudentList> {
-  Future<void> _handleAddStudent(Student student) async {
-    await widget.onAddStudent(student);
+  Future<bool> _handleAddStudent(Student student) async {
+    final result = await widget.addStudent(student);
     setState(() {});
+    return result;
   }
 
-  Future<void> _handleRemoveStudent(Student student) async {
-    await widget.onRemoveStudent(student);
+  Future<bool> _handleRemoveStudent(Student student) async {
+    final result = await widget.removeStudent(student);
     setState(() {});
+    return result;
   }
 
-  Future<void> _handleEditStudent(Student student) async {
-    await widget.onEditStudent(student);
+  Future<bool> _handleEditStudent(Student student) async {
+    final result = await widget.editStudent(student);
     setState(() {});
+    return result;
   }
 
   @override
@@ -64,7 +67,7 @@ class _StudentListState extends State<StudentList> {
         ),
       ),
       floatingActionButton: buildFloatingAddButton(
-          context, (c) => AddStudentDialog(classroom: widget.classroom, onAddStudent: _handleAddStudent)),
+          context, (c) => AddStudentDialog(classroom: widget.classroom, addStudent: _handleAddStudent)),
     );
   }
 }
@@ -108,7 +111,7 @@ class StudentListItem extends StatelessWidget {
                 final result = await Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => EditStudentDialog(student: student, onEditStudent: onEditStudent)),
+                      builder: (context) => EditStudentDialog(student: student, editStudent: onEditStudent)),
                 );
                 if (result != null && result) {
                   ScaffoldMessenger.of(context)

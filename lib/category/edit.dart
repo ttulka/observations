@@ -7,10 +7,10 @@ import 'form.dart';
 import 'domain.dart';
 
 class EditCategoryDialog extends StatelessWidget {
-  const EditCategoryDialog({required this.category, required this.onEditCategory, Key? key}) : super(key: key);
+  const EditCategoryDialog({required this.category, required this.editCategory, Key? key}) : super(key: key);
 
   final Category category;
-  final Function(Category) onEditCategory;
+  final Future<bool> Function(Category) editCategory;
 
   @override
   Widget build(BuildContext context) {
@@ -21,8 +21,8 @@ class EditCategoryDialog extends StatelessWidget {
       body: EditCategoryForm(
           category: category,
           onEditCategory: (Category category) async {
-            await onEditCategory(category);
-            Navigator.pop(context, true);
+            final result = await editCategory(category);
+            Navigator.pop(context, result);
           }),
     );
   }

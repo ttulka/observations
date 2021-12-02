@@ -33,42 +33,47 @@ class CategoryService {
     return Category(id: categoryId, name: '???', template: '');
   }
 
-  Future<void> add(Category category) async {
+  Future<bool> add(Category category) async {
     final Database db = await DatabaseHolder.database;
     final prio = await _getMaxPriority() + 1;
-    await db.insert(table, _toMap(category, prio), conflictAlgorithm: ConflictAlgorithm.replace);
+    return 0 != await db.insert(table, _toMap(category, prio), conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
-  Future<void> edit(Category category) async {
+  Future<bool> edit(Category category) async {
     final Database db = await DatabaseHolder.database;
     final prio = await _getPriority(category);
-    await db.update(table, _toMap(category, prio), where: 'id = ?', whereArgs: [category.id]);
+    return 0 != await db.update(table, _toMap(category, prio), where: 'id = ?', whereArgs: [category.id]);
   }
 
-  Future<void> remove(Category category) async {
+  Future<bool> remove(Category category) async {
     final Database db = await DatabaseHolder.database;
     final prio = await _getPriority(category);
     await db.execute('UPDATE $table SET deleted = TRUE WHERE id = ?', [category.id]);
     await db.execute('UPDATE $table SET priority = priority - 1 WHERE priority > ?', [prio]);
+    return true;
   }
 
-  Future<void> up(Category category) async {
+  Future<bool> up(Category category) async {
     final Database db = await DatabaseHolder.database;
     final prio = await _getPriority(category) - 1;
     if (prio >= 0) {
       await db.execute('UPDATE $table SET priority = priority + 1 WHERE priority = ?', [prio]);
       await db.execute('UPDATE $table SET priority = priority - 1 WHERE id = ?', [category.id]);
+      return true;
     }
+    return false;
   }
 
-  Future<void> down(Category category) async {
+  Future<bool> down(Category category) async {
     final Database db = await DatabaseHolder.database;
     final maxPrio = await _getMaxPriority();
     final prio = await _getPriority(category) + 1;
     if (prio <= maxPrio) {
       await db.execute('UPDATE $table SET priority = priority - 1 WHERE priority = ?', [prio]);
       await db.execute('UPDATE $table SET priority = priority + 1 WHERE id = ?', [category.id]);
+      return true;
     }
+    return false;
   }
 
   Future<int> _getPriority(Category category) async {

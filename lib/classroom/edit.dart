@@ -4,10 +4,10 @@ import 'form.dart';
 import 'domain.dart';
 
 class EditClassroomDialog extends StatelessWidget {
-  const EditClassroomDialog({required this.classroom, required this.onEditClassroom, Key? key}) : super(key: key);
+  const EditClassroomDialog({required this.classroom, required this.editClassroom, Key? key}) : super(key: key);
 
   final Classroom classroom;
-  final Function(Classroom) onEditClassroom;
+  final Future<bool> Function(Classroom) editClassroom;
 
   @override
   Widget build(BuildContext context) {
@@ -18,8 +18,8 @@ class EditClassroomDialog extends StatelessWidget {
       body: EditClassroomForm(
           classroom: classroom,
           onEditClassroom: (Classroom classroom) async {
-            await onEditClassroom(classroom);
-            Navigator.pop(context, true);
+            final result = await editClassroom(classroom);
+            Navigator.pop(context, result);
           }),
     );
   }

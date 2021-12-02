@@ -6,18 +6,18 @@ import 'service.dart';
 import 'add.dart';
 import 'edit.dart';
 
-typedef UpdateCategory = Future<void> Function(Category category);
+typedef UpdateCategory = Future<bool> Function(Category category);
 
 class CategoryList extends StatefulWidget {
   CategoryList({Key? key}) : super(key: key);
 
   final CategoryService _service = CategoryService();
 
-  Future<void> onAddCategory(Category category) => _service.add(category);
-  Future<void> onEditCategory(Category category) => _service.edit(category);
-  Future<void> onRemoveCategory(Category category) => _service.remove(category);
-  Future<void> onUpCategory(Category category) => _service.up(category);
-  Future<void> onDownCategory(Category category) => _service.down(category);
+  Future<bool> addCategory(Category category) => _service.add(category);
+  Future<bool> editCategory(Category category) => _service.edit(category);
+  Future<bool> removeCategory(Category category) => _service.remove(category);
+  Future<bool> upCategory(Category category) => _service.up(category);
+  Future<bool> downCategory(Category category) => _service.down(category);
   Future<List<Category>> loadCategories() => _service.listAll();
 
   @override
@@ -25,29 +25,34 @@ class CategoryList extends StatefulWidget {
 }
 
 class _CategoryListState extends State<CategoryList> {
-  Future<void> _handleAddCategory(Category category) async {
-    await widget.onAddCategory(category);
+  Future<bool> _handleAddCategory(Category category) async {
+    final result = await widget.addCategory(category);
     setState(() {});
+    return result;
   }
 
-  Future<void> _handleEditCategory(Category category) async {
-    await widget.onEditCategory(category);
+  Future<bool> _handleEditCategory(Category category) async {
+    final result = await widget.editCategory(category);
     setState(() {});
+    return result;
   }
 
-  Future<void> _handleRemoveCategory(Category category) async {
-    await widget.onRemoveCategory(category);
+  Future<bool> _handleRemoveCategory(Category category) async {
+    final result = await widget.removeCategory(category);
     setState(() {});
+    return result;
   }
 
-  Future<void> _handleUpCategory(Category category) async {
-    await widget.onUpCategory(category);
+  Future<bool> _handleUpCategory(Category category) async {
+    final result = await widget.upCategory(category);
     setState(() {});
+    return result;
   }
 
-  Future<void> _handleDownCategory(Category category) async {
-    await widget.onDownCategory(category);
+  Future<bool> _handleDownCategory(Category category) async {
+    final result = await widget.downCategory(category);
     setState(() {});
+    return result;
   }
 
   @override
@@ -63,16 +68,21 @@ class _CategoryListState extends State<CategoryList> {
           children: categories
               .map((category) => CategoryListItem(
                     category: category,
-                    onEditCategory: _handleEditCategory,
-                    onRemoveCategory: _handleRemoveCategory,
                     onUpCategory: _handleUpCategory,
                     onDownCategory: _handleDownCategory,
+                    onEditCategory: _handleEditCategory,
+                    onRemoveCategory: (c) async {
+                      if (categories.length == 1) {
+                        showAlert(context, AppLocalizations.of(context)!.alertAtLeastOne);
+                        return false;
+                      }
+                      return await _handleRemoveCategory(c);
+                    },
                   ))
               .toList(),
         ),
       ),
-      floatingActionButton:
-          buildFloatingAddButton(context, (c) => AddCategoryDialog(onAddCategory: _handleAddCategory)),
+      floatingActionButton: buildFloatingAddButton(context, (c) => AddCategoryDialog(addCategory: _handleAddCategory)),
     );
   }
 }
@@ -137,7 +147,7 @@ class CategoryListItem extends StatelessWidget {
       MaterialPageRoute(
           builder: (context) => EditCategoryDialog(
                 category: category,
-                onEditCategory: onEditCategory,
+                editCategory: onEditCategory,
               )),
     );
     if (result != null && result) {

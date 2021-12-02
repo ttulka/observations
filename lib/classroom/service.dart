@@ -26,20 +26,21 @@ class ClassroomService {
     return {for (var y in years) y: classrooms.where((c) => c.year == y).toList()};
   }
 
-  Future<void> add(Classroom classroom) async {
+  Future<bool> add(Classroom classroom) async {
     final Database db = await DatabaseHolder.database;
-    await db.insert(table, _toMap(classroom), conflictAlgorithm: ConflictAlgorithm.replace);
+    return 0 != await db.insert(table, _toMap(classroom), conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
-  Future<void> edit(Classroom classroom) async {
+  Future<bool> edit(Classroom classroom) async {
     final Database db = await DatabaseHolder.database;
-    await db.update(table, _toMap(classroom), where: 'id = ?', whereArgs: [classroom.id]);
+    return 0 != await db.update(table, _toMap(classroom), where: 'id = ?', whereArgs: [classroom.id]);
   }
 
-  Future<void> remove(Classroom classroom) async {
+  Future<bool> remove(Classroom classroom) async {
     final Database db = await DatabaseHolder.database;
     await _studentService.removeAllByClassroomId(classroom.id);
     await db.execute('UPDATE $table SET deleted = TRUE WHERE id = ?', [classroom.id]);
+    return true;
   }
 
   static Map<String, dynamic> _toMap(Classroom classroom) {

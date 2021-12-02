@@ -24,23 +24,24 @@ class StudentService {
     });
   }
 
-  Future<void> add(Student student) async {
+  Future<bool> add(Student student) async {
     final Database db = await DatabaseHolder.database;
-    await db.insert(table, _toMap(student), conflictAlgorithm: ConflictAlgorithm.replace);
+    return 0 != await db.insert(table, _toMap(student), conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
-  Future<void> edit(Student student) async {
+  Future<bool> edit(Student student) async {
     final Database db = await DatabaseHolder.database;
-    await db.update(table, _toMap(student), where: 'id = ?', whereArgs: [student.id]);
+    return 0 != await db.update(table, _toMap(student), where: 'id = ?', whereArgs: [student.id]);
   }
 
-  Future<void> remove(Student student) async {
+  Future<bool> remove(Student student) async {
     final Database db = await DatabaseHolder.database;
     await _observationService.removeAllByStudentId(student.id);
     await db.execute('UPDATE $table SET deleted = TRUE WHERE id = ?', [student.id]);
+    return true;
   }
 
-  Future<void> removeAllByClassroomId(String classroomId) async {
+  Future<bool> removeAllByClassroomId(String classroomId) async {
     final Database db = await DatabaseHolder.database;
     final List<Map<String, dynamic>> maps =
         await db.query(table, columns: ['id'], where: 'classroomId = ? AND deleted = FALSE', whereArgs: [classroomId]);
@@ -49,6 +50,7 @@ class StudentService {
       await _observationService.removeAllByStudentId(studentId);
     }
     await db.execute('UPDATE $table SET deleted = TRUE WHERE classroomId = ?', [classroomId]);
+    return true;
   }
 
   static Map<String, dynamic> _toMap(Student student) {

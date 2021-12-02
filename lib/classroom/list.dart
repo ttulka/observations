@@ -8,16 +8,16 @@ import 'add.dart';
 import 'edit.dart';
 import '../student/list.dart';
 
-typedef UpdateClassroom = Function(Classroom classroom);
+typedef UpdateClassroom = Future<bool> Function(Classroom classroom);
 
 class ClassroomList extends StatefulWidget {
   ClassroomList({Key? key}) : super(key: key);
 
   final ClassroomService _service = ClassroomService();
 
-  Future<void> onAddClassroom(Classroom classroom) => _service.add(classroom);
-  Future<void> onEditClassroom(Classroom classroom) => _service.edit(classroom);
-  Future<void> onRemoveClassroom(Classroom classroom) => _service.remove(classroom);
+  Future<bool> addClassroom(Classroom classroom) => _service.add(classroom);
+  Future<bool> editClassroom(Classroom classroom) => _service.edit(classroom);
+  Future<bool> removeClassroom(Classroom classroom) => _service.remove(classroom);
   Future<ClassroomPerYear> loadClassrooms() => _service.listAll();
 
   @override
@@ -25,24 +25,28 @@ class ClassroomList extends StatefulWidget {
 }
 
 class _ClassroomListState extends State<ClassroomList> {
-  Future<void> _handleAddClassroom(Classroom classroom, BuildContext context) async {
+  Future<bool> _handleAddClassroom(Classroom classroom, BuildContext context) async {
     // TODO remove this hack when the feature is published:
     if (classroom.name.startsWith('#! ')) {
       execPreviewAction(context, classroom.name);
-      return setState(() {});
+      setState(() {});
+      return false; // prevent from standard action's message
     }
-    await widget.onAddClassroom(classroom);
+    final result = await widget.addClassroom(classroom);
     setState(() {});
+    return result;
   }
 
-  Future<void> _handleRemoveClassroom(Classroom classroom) async {
-    await widget.onRemoveClassroom(classroom);
+  Future<bool> _handleRemoveClassroom(Classroom classroom) async {
+    final result = await widget.removeClassroom(classroom);
     setState(() {});
+    return result;
   }
 
-  Future<void> _handleEditClassroom(Classroom classroom) async {
-    await widget.onEditClassroom(classroom);
+  Future<bool> _handleEditClassroom(Classroom classroom) async {
+    final result = await widget.editClassroom(classroom);
     setState(() {});
+    return result;
   }
 
   @override
@@ -56,7 +60,7 @@ class _ClassroomListState extends State<ClassroomList> {
         ),
       ),
       floatingActionButton: buildFloatingAddButton(
-          context, (c) => AddClassroomDialog(onAddClassroom: (c) => _handleAddClassroom(c, context))),
+          context, (c) => AddClassroomDialog(addClassroom: (c) => _handleAddClassroom(c, context))),
     );
   }
 
@@ -112,7 +116,7 @@ class ClassroomListItem extends StatelessWidget {
                 MaterialPageRoute(
                     builder: (context) => EditClassroomDialog(
                           classroom: classroom,
-                          onEditClassroom: onEditClassroom,
+                          editClassroom: onEditClassroom,
                         )),
               );
               if (result != null && result) {

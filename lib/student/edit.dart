@@ -4,10 +4,10 @@ import 'form.dart';
 import 'domain.dart';
 
 class EditStudentDialog extends StatelessWidget {
-  const EditStudentDialog({required this.student, required this.onEditStudent, Key? key}) : super(key: key);
+  const EditStudentDialog({required this.student, required this.editStudent, Key? key}) : super(key: key);
 
   final Student student;
-  final Function(Student) onEditStudent;
+  final Future<bool> Function(Student) editStudent;
 
   @override
   Widget build(BuildContext context) {
@@ -18,8 +18,8 @@ class EditStudentDialog extends StatelessWidget {
       body: EditStudentForm(
           student: student,
           onEditStudent: (Student student) async {
-            await onEditStudent(student);
-            Navigator.pop(context, true);
+            final result = await editStudent(student);
+            Navigator.pop(context, result);
           }),
     );
   }

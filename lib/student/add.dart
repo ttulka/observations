@@ -6,10 +6,10 @@ import 'domain.dart';
 import '../classroom/domain.dart';
 
 class AddStudentDialog extends StatelessWidget {
-  const AddStudentDialog({required this.classroom, required this.onAddStudent, Key? key}) : super(key: key);
+  const AddStudentDialog({required this.classroom, required this.addStudent, Key? key}) : super(key: key);
 
   final Classroom classroom;
-  final Function(Student) onAddStudent;
+  final Future<bool> Function(Student) addStudent;
 
   @override
   Widget build(BuildContext context) {
@@ -20,8 +20,8 @@ class AddStudentDialog extends StatelessWidget {
       body: AddStudentForm(
           classroom: classroom,
           onAddStudent: (Student student) async {
-            await onAddStudent(student);
-            Navigator.pop(context, true);
+            final result = await addStudent(student);
+            Navigator.pop(context, result);
           }),
     );
   }

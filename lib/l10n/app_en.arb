@@ -11,6 +11,7 @@
     "loading": "Loading...",
     "alertOk": "OK",
     "alertCancel": "Cancel",
+    "alertAtLeastOne": "At least one item is necessary.",
     "printHint": "Print",
     "printNotSupported": "Printing is not supported on your platform.",
     "addSuccess": "Added successfully.",
