@@ -1,7 +1,7 @@
 import 'dart:convert';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:uuid/uuid.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:flutter_quill/flutter_quill.dart' as quill;
@@ -11,9 +11,7 @@ import 'widget_helpers.dart';
 import 'observation_domain.dart';
 import 'student_domain.dart';
 import 'classroom_domain.dart';
-import 'category_domain.dart';
 import 'observation_service.dart';
-import 'category_service.dart';
 import 'observation_form.dart';
 
 typedef SaveObservation = Function(Observation observation);
@@ -25,24 +23,24 @@ class ComposeObservationDialog extends StatelessWidget {
   final Classroom classroom;
 
   final _observationService = ObservationService();
-  final _categoryService = CategoryService();
 
   Future<void> saveObservation(Observation observation) => _observationService.save(observation);
 
   @override
   Widget build(BuildContext context) {
-    return buildFutureWidget<ComposeObservationData>(
-      future: _prepareData(),
-      buildWidget: (data) {
-        Observation? currentObservation = data.observations.isNotEmpty ? data.observations.first : null;
+    return buildFutureWidget<List<Observation>>(
+      future: _observationService.prepareAllByStudent(student),
+      buildWidget: (observations) {
+        final categories = observations.map((o) => o.category).toList();
+        Observation? currentObservation = observations.isNotEmpty ? observations.first : null;
         return DefaultTabController(
-          length: data.categories.length,
+          length: categories.length,
           child: Scaffold(
             appBar: AppBar(
               title: Text('${student.familyName}, ${student.givenName} (${classroom.name})'),
               bottom: TabBar(
-                tabs: data.categories.map((c) => Tab(text: c.localizedName(AppLocalizations.of(context)!))).toList(),
-                onTap: (index) => currentObservation = data.observations[index],
+                tabs: categories.map((c) => Tab(text: c.localizedName(AppLocalizations.of(context)!))).toList(),
+                onTap: (index) => currentObservation = observations[index],
               ),
             ),
             body: ComposeObservationForm(
@@ -50,7 +48,7 @@ class ComposeObservationDialog extends StatelessWidget {
                 currentObservation = o;
                 saveObservation(o);
               },
-              observations: data.observations,
+              observations: observations,
             ),
             floatingActionButton: FloatingActionButton(
               tooltip: AppLocalizations.of(context)!.printHint,
@@ -76,25 +74,9 @@ class ComposeObservationDialog extends StatelessWidget {
       await showAlert(context, AppLocalizations.of(context)!.printNotSupported);
       return;
     }
-    final quill.Document d = quill.Document.fromJson(jsonDecode(observation.content));
-    final html = '<html><body>' + _quillDeltaToHtml(d.toDelta()) + '</body></html>';
-    const format = PdfPageFormat.standard;
-    print('=== CONVERTING START ' + format.toString());
-    final futureDoc = Printing.convertHtml(format: format, html: html);
-    print('=== CONVERTING FUTURE END');
-    futureDoc
-      ..timeout(const Duration(seconds: 5))
-      ..then((doc) => Printing.layoutPdf(onLayout: (PdfPageFormat format) => doc));
-
-    // final doc = pw.Document();
-    // doc.addPage(pw.Page(
-    //     pageFormat: PdfPageFormat.a4,
-    //     build: (pw.Context context) {
-    //       return pw.Center(
-    //         child: pw.Text('Hello World'),
-    //       ); // Center
-    //     }));
-    // await Printing.layoutPdf(onLayout: (PdfPageFormat format) async => doc.save());
+    _toPdf(observation.content)
+        .timeout(const Duration(seconds: 5))
+        .then((doc) => Printing.layoutPdf(onLayout: (PdfPageFormat format) => doc));
   }
 
   static String _quillDeltaToHtml(quill.Delta delta) {
@@ -102,48 +84,14 @@ class ComposeObservationDialog extends StatelessWidget {
     return deltaToHtml(convertedValue);
   }
 
-  Future<ComposeObservationData> _prepareData() async {
-    final currentObservations = await _observationService.listByStudent(student);
-    final categories = _mergeCategories(await _categoryService.listAll(), currentObservations);
-    final observations = _mergeObservations(categories, currentObservations, student.id);
-    return ComposeObservationData(
-      categories: categories,
-      observations: observations,
+  static Future<Uint8List> _toPdf(String jsonContent) async {
+    final quill.Document d = quill.Document.fromJson(jsonDecode(jsonContent));
+    final html = _quillDeltaToHtml(d.toDelta());
+    return Printing.convertHtml(
+      format: PdfPageFormat.standard,
+      html: '<html><body>$html</body></html>',
     );
   }
-
-  static List<Category> _mergeCategories(List<Category> categories, List<Observation> observations) {
-    final List<Category> results = [];
-    results.addAll(categories);
-    observations
-        .map((o) => o.category)
-        .where((c) => categories.indexWhere((c_) => c_.id == c.id) == -1)
-        .forEach((c) => results.add(c));
-    return results;
-  }
-
-  static List<Observation> _mergeObservations(
-      List<Category> categories, List<Observation> observations, String studentId) {
-    return categories
-        .map((c) => observations.firstWhere(
-              (o) => o.category.id == c.id,
-              orElse: () => Observation(
-                id: const Uuid().v4(),
-                category: c,
-                studentId: studentId,
-                updatedAt: DateTime.now(),
-                content: c.template,
-              ),
-            ))
-        .toList();
-  }
-}
-
-class ComposeObservationData {
-  ComposeObservationData({required this.categories, required this.observations});
-
-  final List<Category> categories;
-  final List<Observation> observations;
 }
 
 class ComposeObservationForm extends StatefulWidget {

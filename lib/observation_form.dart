@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -26,15 +27,19 @@ class ObservationForm {
             final doc = o.content.isNotEmpty ? quill.Document.fromJson(jsonDecode(o.content)) : quill.Document();
             final tc = quill.QuillController(document: doc, selection: const TextSelection.collapsed(offset: 0));
             templateControllers[o.id] = tc;
-            // watch the changes in the document and save automatically:
-            var last = tc.document.toDelta();
+
+            // (autosave) watch the changes in the document and save automatically:
+            Timer timer = Timer(const Duration(), () {});
+            var lastDelta = tc.document.toDelta();
             tc.addListener(() {
-              var current = tc.document.toDelta();
-              if (last != current) {
-                last = current;
-                final toSave = _prepareToSave(o, tc);
-                onSave(toSave);
-              }
+              if (timer.isActive) timer.cancel(); // reschedule the saving future
+              timer = Timer(const Duration(seconds: 1), () async {
+                final delta = tc.document.toDelta(); // any change to save?
+                if (delta != lastDelta) {
+                  lastDelta = delta;
+                  await onSave(_prepareToSave(o, delta));
+                }
+              });
             });
             return _newTextAreaField(o, tc, 1000);
           }).toList(),
@@ -47,7 +52,7 @@ class ObservationForm {
             for (Observation o in observations) {
               final tc = templateControllers[o.id];
               if (tc != null) {
-                await onSave(_prepareToSave(o, tc));
+                await onSave(_prepareToSave(o, tc.document.toDelta()));
               }
             }
             await onFinish();
@@ -59,8 +64,8 @@ class ObservationForm {
     ]);
   }
 
-  static Observation _prepareToSave(Observation observation, quill.QuillController controller) {
-    final content = jsonEncode(controller.document.toDelta().toJson());
+  static Observation _prepareToSave(Observation observation, quill.Delta delta) {
+    final content = jsonEncode(delta.toJson());
     return Observation(
       id: observation.id,
       category: observation.category,
@@ -75,17 +80,22 @@ class ObservationForm {
       padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
       child: Column(
         children: [
-          quill.QuillToolbar.basic(
-            controller: controller,
-            showImageButton: false,
-            showVideoButton: false,
-            showCameraButton: false,
-            showListCheck: false,
-            showBackgroundColorButton: false, // it can't be printed
+          Padding(
+            padding: const EdgeInsets.only(bottom: 3),
+            child: quill.QuillToolbar.basic(
+              controller: controller,
+              showInlineCode: false,
+              showImageButton: false,
+              showVideoButton: false,
+              showCameraButton: false,
+              showListCheck: false,
+              showBackgroundColorButton: false, // it can't be printed
+            ),
           ),
           Expanded(
             child: Container(
-              decoration: BoxDecoration(border: Border.all(width: 2.0, color: Colors.grey)),
+              decoration: BoxDecoration(
+                  border: Border.all(width: 2.0, color: Colors.grey), borderRadius: BorderRadius.circular(10.0)),
               child: quill.QuillEditor(
                 controller: controller,
                 readOnly: false, // true for view only mode

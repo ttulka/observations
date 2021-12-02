@@ -36,4 +36,9 @@ class FileStorage {
       return 'Error: $e';
     }
   }
+
+  static Future<void> storeAsPdf(String id, String content) async {
+    final File file = await _localFile(id);
+    await file.writeAsString(content);
+  }
 }

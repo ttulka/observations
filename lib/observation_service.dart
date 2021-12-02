@@ -1,8 +1,10 @@
 import 'package:intl/intl.dart';
+import 'package:uuid/uuid.dart';
 import 'package:sqflite/sql.dart';
 import 'package:sqflite/sqlite_api.dart';
 import 'database.dart';
 import 'storage.dart';
+import 'category_domain.dart';
 import 'category_service.dart';
 import 'student_domain.dart';
 import 'observation_domain.dart';
@@ -10,7 +12,7 @@ import 'observation_domain.dart';
 class ObservationService {
   static const table = 'observations';
 
-  static final _dateFormat = DateFormat('yyyy-MM-dd');
+  static final _dateFormat = DateFormat('yyyy-MM-ddTHH:mm:ss.mmm');
 
   final _categoryService = CategoryService();
 
@@ -30,6 +32,42 @@ class ObservationService {
       ));
     }
     return results;
+  }
+
+  /// Loades or creates a list of [Observation] instances for every category
+  Future<List<Observation>> prepareAllByStudent(Student student) async {
+    final currentObservations = await listByStudent(student);
+    final categories = _mergeCategories(await _categoryService.listAll(), currentObservations);
+    final observations = _mergeObservations(categories, currentObservations, student.id);
+    return observations;
+  }
+
+  /// Merges current categories with historical categories from observations
+  static List<Category> _mergeCategories(List<Category> categories, List<Observation> observations) {
+    final List<Category> results = [];
+    results.addAll(categories);
+    observations
+        .map((o) => o.category)
+        .where((c) => categories.indexWhere((c_) => c_.id == c.id) == -1)
+        .forEach((c) => results.add(c));
+    return results;
+  }
+
+  /// Finds or create a list of [Observation] for all categories
+  static List<Observation> _mergeObservations(
+      List<Category> categories, List<Observation> observations, String studentId) {
+    return categories
+        .map((c) => observations.firstWhere(
+              (o) => o.category.id == c.id,
+              orElse: () => Observation(
+                id: const Uuid().v4(),
+                category: c,
+                studentId: studentId,
+                updatedAt: DateTime.now(),
+                content: c.template,
+              ),
+            ))
+        .toList();
   }
 
   Future<Observation?> getById(String observationId) async {
