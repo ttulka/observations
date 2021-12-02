@@ -1,7 +1,10 @@
+// ignore: todo
 // TODO remove this hack when the feature is published.
 
 import 'package:flutter/widgets.dart';
-import '../persistence/database.dart' as db;
+import 'package:observations/utils/widget_helpers.dart';
+import 'persistence/database.dart' as db;
+import 'persistence/storage.dart';
 
 Future<void> execPreviewAction(BuildContext context, String cmd) async {
   switch (cmd) {
@@ -16,6 +19,11 @@ Future<void> execPreviewAction(BuildContext context, String cmd) async {
       break;
     case '#! a1':
       await db.updateProperty('autosave', '1');
+      break;
+    case '#! i':
+      final dbPath = (await db.DatabaseHolder.database).path;
+      final storagePath = await FileStorage.directory;
+      showAlert(context, 'Path to DB: $dbPath\n\nPath to files: $storagePath');
       break;
   }
 }
