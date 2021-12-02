@@ -6,13 +6,13 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:flutter_quill/flutter_quill.dart' as quill;
 import 'package:printing/printing.dart';
-import 'delta_to_html.dart';
-import 'widget_helpers.dart';
-import 'observation_domain.dart';
-import 'student_domain.dart';
-import 'classroom_domain.dart';
-import 'observation_service.dart';
-import 'observation_form.dart';
+import '../utils/delta_to_html.dart';
+import '../utils/widget_helpers.dart';
+import 'domain.dart';
+import '../student/domain.dart';
+import '../classroom/domain.dart';
+import 'service.dart';
+import 'form.dart';
 
 typedef SaveObservation = Function(Observation observation);
 

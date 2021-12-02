@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'widget_helpers.dart';
-import 'category_domain.dart';
-import 'category_service.dart';
-import 'category_add.dart';
-import 'category_edit.dart';
+import '../utils/widget_helpers.dart';
+import 'domain.dart';
+import 'service.dart';
+import 'add.dart';
+import 'edit.dart';
 
 typedef UpdateCategory = Future<void> Function(Category category);
 

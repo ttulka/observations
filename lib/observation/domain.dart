@@ -1,4 +1,4 @@
-import 'category_domain.dart';
+import '../category/domain.dart';
 
 class Observation {
   Observation(

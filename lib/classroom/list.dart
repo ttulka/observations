@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'database.dart' as db;
-import 'widget_helpers.dart';
-import 'classroom_service.dart';
-import 'classroom_domain.dart';
-import 'classroom_add.dart';
-import 'classroom_edit.dart';
-import 'student_list.dart';
+import '../persistence/database.dart' as db;
+import '../utils/widget_helpers.dart';
+import 'service.dart';
+import 'domain.dart';
+import 'add.dart';
+import 'edit.dart';
+import '../student/list.dart';
 
 typedef UpdateClassroom = Function(Classroom classroom);
 

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'widget_helpers.dart';
-import 'student_service.dart';
-import 'student_domain.dart';
-import 'classroom_domain.dart';
-import 'student_add.dart';
-import 'student_edit.dart';
-import 'observation_compose.dart';
+import '../utils/widget_helpers.dart';
+import 'service.dart';
+import 'domain.dart';
+import '../classroom/domain.dart';
+import 'add.dart';
+import 'edit.dart';
+import '../observation/compose.dart';
 
 typedef UpdateStudent = Function(Student student);
 

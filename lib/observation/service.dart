@@ -2,12 +2,12 @@ import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 import 'package:sqflite/sql.dart';
 import 'package:sqflite/sqlite_api.dart';
-import 'database.dart';
-import 'storage.dart';
-import 'category_domain.dart';
-import 'category_service.dart';
-import 'student_domain.dart';
-import 'observation_domain.dart';
+import '../persistence/database.dart';
+import '../persistence/storage.dart';
+import '../category/domain.dart';
+import '../category/service.dart';
+import '../student/domain.dart';
+import 'domain.dart';
 
 class ObservationService {
   static const table = 'observations';

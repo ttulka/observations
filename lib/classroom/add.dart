@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:uuid/uuid.dart';
-import 'classroom_form.dart';
-import 'classroom_domain.dart';
+import 'form.dart';
+import 'domain.dart';
 
 typedef AddClassroom = Function(Classroom classroom);
 

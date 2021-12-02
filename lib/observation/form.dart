@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_quill/flutter_quill.dart' as quill;
-import 'observation_domain.dart';
+import 'domain.dart';
 
 class ObservationForm {
   ObservationForm({required this.observations, required this.onSave});

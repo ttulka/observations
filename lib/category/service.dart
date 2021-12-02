@@ -1,7 +1,7 @@
 import 'package:sqflite/sqlite_api.dart';
 import 'package:sqflite/sql.dart';
-import 'database.dart';
-import 'category_domain.dart';
+import '../persistence/database.dart';
+import 'domain.dart';
 
 class CategoryService {
   static const table = 'categories';

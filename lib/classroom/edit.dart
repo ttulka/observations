@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'classroom_form.dart';
-import 'classroom_domain.dart';
+import 'form.dart';
+import 'domain.dart';
 
 class EditClassroomDialog extends StatelessWidget {
   const EditClassroomDialog({required this.classroom, required this.onEditClassroom, Key? key}) : super(key: key);

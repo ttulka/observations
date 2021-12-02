@@ -1,8 +1,8 @@
 import 'package:sqflite/sqlite_api.dart';
 import 'package:sqflite/sql.dart';
-import 'database.dart';
-import 'classroom_domain.dart';
-import 'student_service.dart';
+import '../persistence/database.dart';
+import 'domain.dart';
+import '../student/service.dart';
 
 typedef ClassroomPerYear = Map<int, List<Classroom>>;
 

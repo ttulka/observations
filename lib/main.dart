@@ -5,8 +5,8 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:window_size/window_size.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'classroom_list.dart';
-import 'category_list.dart';
+import 'classroom/list.dart';
+import 'category/list.dart';
 
 const appTitle = 'Student Observations';
 const color = Colors.blue;

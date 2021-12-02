@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:uuid/uuid.dart';
-import 'student_form.dart';
-import 'student_domain.dart';
-import 'classroom_domain.dart';
+import 'form.dart';
+import 'domain.dart';
+import '../classroom/domain.dart';
 
 class AddStudentDialog extends StatelessWidget {
   const AddStudentDialog({required this.classroom, required this.onAddStudent, Key? key}) : super(key: key);

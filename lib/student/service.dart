@@ -1,9 +1,9 @@
 import 'package:sqflite/sqlite_api.dart';
 import 'package:sqflite/sql.dart';
-import 'database.dart';
-import 'classroom_domain.dart';
-import 'student_domain.dart';
-import 'observation_service.dart';
+import '../persistence/database.dart';
+import '../classroom/domain.dart';
+import 'domain.dart';
+import '../observation/service.dart';
 
 class StudentService {
   static const table = 'students';

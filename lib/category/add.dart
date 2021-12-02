@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_quill/flutter_quill.dart' as quill;
 import 'package:uuid/uuid.dart';
-import 'category_form.dart';
-import 'category_domain.dart';
+import 'form.dart';
+import 'domain.dart';
 
 class AddCategoryDialog extends StatelessWidget {
   const AddCategoryDialog({required this.onAddCategory, Key? key}) : super(key: key);
