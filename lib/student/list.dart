@@ -99,7 +99,6 @@ class StudentListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var justPriting = false;
     return ListTile(
       onTap: () async {
         final result = await Navigator.push(
@@ -123,12 +122,8 @@ class StudentListItem extends StatelessWidget {
             tooltip: AppLocalizations.of(context)!.printStudentObservationsHint,
             splashRadius: 20,
             onPressed: () async {
-              if (!justPriting) {
-                justPriting = true;
-                final observations = await loadObservations(student);
-                await showPrintDialog(context, observations, classroom: classroom, student: student);
-                justPriting = false;
-              }
+              final observations = await loadObservations(student);
+              await showPrintDialog(context, observations, classroom: classroom, student: student);
             },
           ),
           IconButton(

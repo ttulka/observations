@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
+import '../utils/logger.dart';
 
 class FileStorage {
   static String? _directory;
@@ -8,7 +9,7 @@ class FileStorage {
 
   static Future<String> _getDirectory() async {
     Directory dir = await getLibraryDirectory();
-    print("=== STORAGE PATH: " + dir.path);
+    Logger.info("storage path: " + dir.path);
     return dir.path;
   }
 
@@ -18,13 +19,13 @@ class FileStorage {
   }
 
   static Future<bool> store(String id, String content) async {
-    print('=== STORE CONTENT: $content');
+    Logger.debug('store content: $content');
     try {
       final File file = await _localFile(id);
-      await file.writeAsString(content);
+      file.writeAsStringSync(content);
       return true;
     } catch (e) {
-      print(e);
+      Logger.error('Cannot store the file: $id', e);
       return false;
     }
   }
@@ -33,12 +34,12 @@ class FileStorage {
     try {
       final File file = await _localFile(id);
       if (file.existsSync()) {
-        return await file.readAsString();
+        return file.readAsStringSync();
       } else {
         return '';
       }
     } catch (e) {
-      print(e);
+      Logger.error('Cannot load the file: $id', e);
       return '[{"insert":"Error: ${e.toString().replaceAll('"', "'")}","attributes":{"color":"#ff0000"}},{"insert":"\\n"}]';
     }
   }
@@ -53,13 +54,8 @@ class FileStorage {
         return false;
       }
     } catch (e) {
-      print(e);
+      Logger.error('Cannot delete the file: $id', e);
       return false;
     }
-  }
-
-  static Future<void> storeAsPdf(String id, String content) async {
-    final File file = await _localFile(id);
-    await file.writeAsString(content);
   }
 }

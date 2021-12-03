@@ -24,7 +24,6 @@ class ComposeObservationDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     final autosave = _observationService.autosaveActive();
     final headers = _observationService.headersActive();
-    var justPriting = false;
     return buildFutureWidget<List<Observation>>(
       future: _observationService.prepareAllByStudent(student),
       buildWidget: (observations) {
@@ -53,11 +52,9 @@ class ComposeObservationDialog extends StatelessWidget {
               child: const Icon(Icons.print),
               backgroundColor: Colors.grey,
               onPressed: () async {
-                if (!justPriting && currentObservation != null) {
-                  justPriting = true;
+                if (currentObservation != null) {
                   await showPrintDialog(context, [currentObservation!],
                       classroom: classroom, student: student, headers: await headers);
-                  justPriting = false;
                 }
               },
             ),

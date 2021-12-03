@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:uuid/uuid.dart';
+import '../utils/logger.dart';
 import 'storage.dart';
 
 class DatabaseHolder {
@@ -42,7 +43,7 @@ class DatabaseHolder {
         }
       },
     );
-    print("=== DATABASE PATH: " + db.path);
+    Logger.info("Database path: " + db.path);
     return db;
   }
 }

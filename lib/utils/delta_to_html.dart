@@ -1,8 +1,8 @@
 import 'dart:convert';
-
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter_quill/flutter_quill.dart';
 import 'package:flutter_quill/models/documents/style.dart';
+import 'logger.dart';
 
 final _encoder = DeltaHtmlEncoder();
 

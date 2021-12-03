@@ -4,6 +4,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:window_size/window_size.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'utils/logger.dart';
 import 'classroom/list.dart';
 import 'category/list.dart';
 
@@ -22,7 +23,7 @@ void main() {
     }
   } catch (e) {
     // ignore: avoid_print
-    print('Cannot determine platform: $e');
+    Logger.error('Cannot determine platform: $e');
   }
   runApp(const ObservationsApp());
 }
