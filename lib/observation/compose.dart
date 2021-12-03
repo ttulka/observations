@@ -1,13 +1,7 @@
-import 'dart:convert';
-import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:observations/category/domain.dart';
-import 'package:pdf/pdf.dart';
-import 'package:flutter_quill/flutter_quill.dart' as quill;
-import 'package:printing/printing.dart';
-import '../utils/delta_to_html.dart';
 import '../utils/widget_helpers.dart';
+import '../utils/printing.dart';
 import 'domain.dart';
 import '../student/domain.dart';
 import '../classroom/domain.dart';
@@ -30,6 +24,7 @@ class ComposeObservationDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     final autosave = _observationService.autosaveActive();
     final headers = _observationService.headersActive();
+    var justPriting = false;
     return buildFutureWidget<List<Observation>>(
       future: _observationService.prepareAllByStudent(student),
       buildWidget: (observations) {
@@ -57,48 +52,19 @@ class ComposeObservationDialog extends StatelessWidget {
               tooltip: AppLocalizations.of(context)!.printHint,
               child: const Icon(Icons.print),
               backgroundColor: Colors.grey,
-              onPressed: () => _printDialog(context, currentObservation, headers),
+              onPressed: () async {
+                if (!justPriting && currentObservation != null) {
+                  justPriting = true;
+                  await showPrintDialog(context, [currentObservation!],
+                      classroom: classroom, student: student, headers: await headers);
+                  justPriting = false;
+                }
+              },
             ),
           ),
         );
       },
     );
-  }
-
-  Future<void> _printDialog(BuildContext context, Observation? observation, Future<bool> obtainHeaders) async {
-    if (observation == null) {
-      return;
-    }
-    final info = await Printing.info();
-    if (!info.canPrint) print('=== PRINTING NOT SUPPORTED');
-    if (!info.directPrint) print('=== DIRECT PRINTING NOT SUPPORTED');
-    if (!info.canConvertHtml) print('=== CONVERTING NOT SUPPORTED');
-    if (!info.canPrint || !info.canConvertHtml) {
-      await showAlert(context, AppLocalizations.of(context)!.printNotSupported);
-      return;
-    }
-    _toPdf(observation.content, '${student.familyName}, ${student.givenName}', classroom.name,
-            observation.category.localizedName(AppLocalizations.of(context)!), await obtainHeaders)
-        .timeout(const Duration(seconds: 5))
-        .then((doc) => Printing.layoutPdf(onLayout: (PdfPageFormat format) => doc));
-  }
-
-  static Future<Uint8List> _toPdf(
-      String jsonContent, String student, String classroom, String category, bool headers) async {
-    final quill.Document d =
-        jsonContent.isNotEmpty ? quill.Document.fromJson(jsonDecode(jsonContent)) : quill.Document();
-    final html = _quillDeltaToHtml(d.toDelta());
-    final header =
-        headers ? '<p style="text-align: center; padding: 5px">$student ($classroom) | $category</p><hr>' : '';
-    return Printing.convertHtml(
-      format: PdfPageFormat.standard,
-      html: '<html><body>$header$html</body></html>',
-    );
-  }
-
-  static String _quillDeltaToHtml(quill.Delta delta) {
-    final convertedValue = jsonEncode(delta.toJson());
-    return deltaToHtml(convertedValue);
   }
 }
 

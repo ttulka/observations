@@ -45,5 +45,6 @@
     "addStudentTitle": "Add a new student",
     "editStudentTitle": "Edit a student",
     "editStudentHint": "Edit this student",
-    "removeStudentHint": "Remove this student"
+    "removeStudentHint": "Remove this student",
+    "printStudentObservationsHint": "Print all student's observations"
 }

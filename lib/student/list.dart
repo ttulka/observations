@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:observations/observation/domain.dart';
+import 'package:observations/observation/service.dart';
 import '../utils/widget_helpers.dart';
+import '../utils/printing.dart';
 import 'service.dart';
 import 'domain.dart';
 import '../classroom/domain.dart';
+import '../observation/domain.dart';
+import '../observation/service.dart';
 import 'add.dart';
 import 'edit.dart';
 import '../observation/compose.dart';
@@ -16,11 +21,13 @@ class StudentList extends StatefulWidget {
   final Classroom classroom;
 
   final StudentService _service = StudentService();
+  final ObservationService _observationService = ObservationService();
 
+  Future<List<Student>> loadStudents() => _service.listByClassroom(classroom);
   Future<bool> addStudent(Student student) => _service.add(student);
   Future<bool> editStudent(Student student) => _service.edit(student);
   Future<bool> removeStudent(Student student) => _service.remove(student);
-  Future<List<Student>> loadStudents() => _service.listByClassroom(classroom);
+  Future<List<Observation>> loadObservations(Student student) => _observationService.listByStudent(student);
 
   @override
   _StudentListState createState() => _StudentListState();
@@ -60,6 +67,7 @@ class _StudentListState extends State<StudentList> {
             return StudentListItem(
               student: student,
               classroom: widget.classroom,
+              loadObservations: widget.loadObservations,
               onEditStudent: _handleEditStudent,
               onRemoveStudent: _handleRemoveStudent,
             );
@@ -74,7 +82,11 @@ class _StudentListState extends State<StudentList> {
 
 class StudentListItem extends StatelessWidget {
   StudentListItem(
-      {required this.student, required this.classroom, required this.onEditStudent, required this.onRemoveStudent})
+      {required this.student,
+      required this.classroom,
+      required this.onEditStudent,
+      required this.onRemoveStudent,
+      required this.loadObservations})
       : super(key: ObjectKey(student));
 
   final Student student;
@@ -83,8 +95,11 @@ class StudentListItem extends StatelessWidget {
   final UpdateStudent onEditStudent;
   final UpdateStudent onRemoveStudent;
 
+  final Future<List<Observation>> Function(Student) loadObservations;
+
   @override
   Widget build(BuildContext context) {
+    var justPriting = false;
     return ListTile(
       onTap: () async {
         final result = await Navigator.push(
@@ -103,6 +118,19 @@ class StudentListItem extends StatelessWidget {
       trailing: FittedBox(
         fit: BoxFit.fill,
         child: Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+          IconButton(
+            icon: const Icon(Icons.print),
+            tooltip: AppLocalizations.of(context)!.printStudentObservationsHint,
+            splashRadius: 20,
+            onPressed: () async {
+              if (!justPriting) {
+                justPriting = true;
+                final observations = await loadObservations(student);
+                await showPrintDialog(context, observations, classroom: classroom, student: student);
+                justPriting = false;
+              }
+            },
+          ),
           IconButton(
               icon: const Icon(Icons.edit),
               tooltip: AppLocalizations.of(context)!.editStudentHint,
