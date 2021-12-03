@@ -1,5 +1,7 @@
+import 'package:observations/student/domain.dart';
 import 'package:sqflite/sqlite_api.dart';
 import 'package:sqflite/sql.dart';
+import 'package:uuid/uuid.dart';
 import '../persistence/database.dart';
 import 'domain.dart';
 import '../student/service.dart';
@@ -41,6 +43,20 @@ class ClassroomService {
     await _studentService.removeAllByClassroomId(classroom.id);
     await db.execute('UPDATE $table SET deleted = TRUE WHERE id = ?', [classroom.id]);
     return true;
+  }
+
+  Future<Classroom> copyWithStudents(Classroom classroom) async {
+    final classroomId = const Uuid().v4();
+    final newClassroom = Classroom(
+        id: classroomId, name: classroom.name, description: '(Copy) ${classroom.description}', year: classroom.year);
+    await add(newClassroom);
+    final students = await _studentService.listByClassroom(classroom);
+    for (var s in students) {
+      final student =
+          Student(id: const Uuid().v4(), givenName: s.givenName, familyName: s.familyName, classroomId: classroomId);
+      await _studentService.add(student);
+    }
+    return newClassroom;
   }
 
   static Map<String, dynamic> _toMap(Classroom classroom) {

@@ -15,10 +15,11 @@ class ClassroomList extends StatefulWidget {
 
   final ClassroomService _service = ClassroomService();
 
+  Future<ClassroomPerYear> loadClassrooms() => _service.listAll();
   Future<bool> addClassroom(Classroom classroom) => _service.add(classroom);
   Future<bool> editClassroom(Classroom classroom) => _service.edit(classroom);
   Future<bool> removeClassroom(Classroom classroom) => _service.remove(classroom);
-  Future<ClassroomPerYear> loadClassrooms() => _service.listAll();
+  Future<void> copyClassroom(Classroom classroom) => _service.copyWithStudents(classroom);
 
   @override
   _ClassroomListState createState() => _ClassroomListState();
@@ -49,6 +50,12 @@ class _ClassroomListState extends State<ClassroomList> {
     return result;
   }
 
+  Future<bool> _handleCopyClassroom(Classroom classroom) async {
+    await widget.copyClassroom(classroom);
+    setState(() {});
+    return true;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -75,6 +82,7 @@ class _ClassroomListState extends State<ClassroomList> {
             classroom: c,
             onEditClassroom: _handleEditClassroom,
             onRemoveClassroom: _handleRemoveClassroom,
+            onCopyClassroom: _handleCopyClassroom,
           )));
     }
     return items;
@@ -82,13 +90,18 @@ class _ClassroomListState extends State<ClassroomList> {
 }
 
 class ClassroomListItem extends StatelessWidget {
-  ClassroomListItem({required this.classroom, required this.onEditClassroom, required this.onRemoveClassroom})
+  ClassroomListItem(
+      {required this.classroom,
+      required this.onEditClassroom,
+      required this.onRemoveClassroom,
+      required this.onCopyClassroom})
       : super(key: ObjectKey(classroom));
 
   final Classroom classroom;
 
   final UpdateClassroom onEditClassroom;
   final UpdateClassroom onRemoveClassroom;
+  final UpdateClassroom onCopyClassroom;
 
   @override
   Widget build(BuildContext context) {
@@ -106,6 +119,16 @@ class ClassroomListItem extends StatelessWidget {
       trailing: FittedBox(
         fit: BoxFit.fill,
         child: Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+          IconButton(
+            icon: const Icon(Icons.content_copy),
+            tooltip: AppLocalizations.of(context)!.copyClassroomHint,
+            splashRadius: 20,
+            onPressed: () => actionWithAlert(context,
+                action: () => onCopyClassroom(classroom),
+                alertTitle: AppLocalizations.of(context)!.copyClassroomAlertTitle,
+                alertText: AppLocalizations.of(context)!.copyClassroomAlertText,
+                successText: AppLocalizations.of(context)!.copySuccess),
+          ),
           IconButton(
             icon: const Icon(Icons.edit),
             tooltip: AppLocalizations.of(context)!.editClassroomHint,

@@ -53,12 +53,18 @@ Widget buildFloatingAddButton(BuildContext context, Widget Function(BuildContext
       });
 }
 
-Future<void> removalWithAlert(BuildContext context, Future<bool> Function() removeAction) async {
+Future<void> actionWithAlert(
+  BuildContext context, {
+  required Future<bool> Function() action,
+  required String alertTitle,
+  required String alertText,
+  required String successText,
+}) async {
   final result = await showDialog<bool>(
     context: context,
     builder: (BuildContext context) => AlertDialog(
-      title: Text(AppLocalizations.of(context)!.removeAlertTitle),
-      content: Text(AppLocalizations.of(context)!.removeAlertText),
+      title: Text(alertTitle),
+      content: Text(alertText),
       actions: <Widget>[
         TextButton(
           onPressed: () => Navigator.pop(context, false),
@@ -72,12 +78,20 @@ Future<void> removalWithAlert(BuildContext context, Future<bool> Function() remo
     ),
   );
   if (result != null && result) {
-    if (await removeAction()) {
+    if (await action()) {
       ScaffoldMessenger.of(context)
         ..removeCurrentSnackBar()
-        ..showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.removeSuccess)));
+        ..showSnackBar(SnackBar(content: Text(successText)));
     }
   }
+}
+
+Future<void> removalWithAlert(BuildContext context, Future<bool> Function() removeAction) {
+  return actionWithAlert(context,
+      action: removeAction,
+      alertTitle: AppLocalizations.of(context)!.removeAlertTitle,
+      alertText: AppLocalizations.of(context)!.removeAlertText,
+      successText: AppLocalizations.of(context)!.removeSuccess);
 }
 
 Future<bool?> showAlert(BuildContext context, String text) => showDialog<bool>(
