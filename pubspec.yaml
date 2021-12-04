@@ -36,6 +36,7 @@ dependencies:
   flutter_quill: ^2.0.21
   url_launcher: ^6.0.16
   sqflite: ^2.0.0+4
+  sqflite_common_ffi: ^2.1.0
   path: ^1.8.0
   path_provider: ^2.0.7
   pdf: ^3.6.3

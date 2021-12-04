@@ -8,7 +8,7 @@ class FileStorage {
   static get directory async => _directory ??= await _getDirectory();
 
   static Future<String> _getDirectory() async {
-    Directory dir = await getLibraryDirectory();
+    Directory dir = await getApplicationSupportDirectory();
     Logger.info("storage path: " + dir.path);
     return dir.path;
   }
