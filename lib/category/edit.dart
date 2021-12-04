@@ -7,7 +7,9 @@ import 'form.dart';
 import 'domain.dart';
 
 class EditCategoryDialog extends StatelessWidget {
-  const EditCategoryDialog({required this.category, required this.editCategory, Key? key}) : super(key: key);
+  const EditCategoryDialog(
+      {required this.category, required this.editCategory, Key? key})
+      : super(key: key);
 
   final Category category;
   final Future<bool> Function(Category) editCategory;
@@ -16,7 +18,8 @@ class EditCategoryDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(AppLocalizations.of(context)!.editCategoryTitle),
+        title: Center(
+            child: Text(AppLocalizations.of(context)!.editCategoryTitle)),
       ),
       body: EditCategoryForm(
           category: category,
@@ -29,7 +32,9 @@ class EditCategoryDialog extends StatelessWidget {
 }
 
 class EditCategoryForm extends StatefulWidget {
-  const EditCategoryForm({required this.category, required this.onEditCategory, Key? key}) : super(key: key);
+  const EditCategoryForm(
+      {required this.category, required this.onEditCategory, Key? key})
+      : super(key: key);
 
   final Category category;
   final Function(Category) onEditCategory;
@@ -63,12 +68,14 @@ class EditCategoryFormState extends State<EditCategoryForm> {
 
   @override
   Widget build(BuildContext context) {
-    nameController.text = widget.category.localizedName(AppLocalizations.of(context)!);
+    nameController.text =
+        widget.category.localizedName(AppLocalizations.of(context)!);
     return CategoryForm(
         nameController: nameController,
         templateController: templateController,
         onSave: () async {
-          final template = jsonEncode(templateController.document.toDelta().toJson());
+          final template =
+              jsonEncode(templateController.document.toDelta().toJson());
           final category = Category(
             id: widget.category.id,
             name: nameController.text,

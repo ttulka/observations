@@ -11,14 +11,17 @@ import 'form.dart';
 typedef SaveObservation = Function(Observation observation);
 
 class ComposeObservationDialog extends StatelessWidget {
-  ComposeObservationDialog({required this.student, required this.classroom, Key? key}) : super(key: key);
+  ComposeObservationDialog(
+      {required this.student, required this.classroom, Key? key})
+      : super(key: key);
 
   final Student student;
   final Classroom classroom;
 
   final _observationService = ObservationService();
 
-  Future<bool> saveObservation(Observation observation) => _observationService.save(observation);
+  Future<bool> saveObservation(Observation observation) =>
+      _observationService.save(observation);
 
   @override
   Widget build(BuildContext context) {
@@ -28,14 +31,20 @@ class ComposeObservationDialog extends StatelessWidget {
       future: _observationService.prepareAllByStudent(student),
       buildWidget: (observations) {
         final categories = observations.map((o) => o.category).toList();
-        Observation? currentObservation = observations.isNotEmpty ? observations.first : null;
+        Observation? currentObservation =
+            observations.isNotEmpty ? observations.first : null;
         return DefaultTabController(
           length: categories.length,
           child: Scaffold(
             appBar: AppBar(
-              title: Text('${student.familyName}, ${student.givenName} (${classroom.name})'),
+              title: Center(
+                  child: Text(
+                      '${student.familyName}, ${student.givenName} (${classroom.name})')),
               bottom: TabBar(
-                tabs: categories.map((c) => Tab(text: c.localizedName(AppLocalizations.of(context)!))).toList(),
+                tabs: categories
+                    .map((c) => Tab(
+                        text: c.localizedName(AppLocalizations.of(context)!)))
+                    .toList(),
                 onTap: (index) => currentObservation = observations[index],
               ),
             ),
@@ -54,7 +63,9 @@ class ComposeObservationDialog extends StatelessWidget {
               onPressed: () async {
                 if (currentObservation != null) {
                   await showPrintDialog(context, [currentObservation!],
-                      classroom: classroom, student: student, headers: await headers);
+                      classroom: classroom,
+                      student: student,
+                      headers: await headers);
                 }
               },
             ),
@@ -67,7 +78,10 @@ class ComposeObservationDialog extends StatelessWidget {
 
 class ComposeObservationForm extends StatefulWidget {
   const ComposeObservationForm(
-      {required this.onSaveObservation, required this.observations, required this.obtainAutosave, Key? key})
+      {required this.onSaveObservation,
+      required this.observations,
+      required this.obtainAutosave,
+      Key? key})
       : super(key: key);
 
   final SaveObservation onSaveObservation;

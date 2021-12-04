@@ -6,7 +6,9 @@ import 'domain.dart';
 import '../classroom/domain.dart';
 
 class AddStudentDialog extends StatelessWidget {
-  const AddStudentDialog({required this.classroom, required this.addStudent, Key? key}) : super(key: key);
+  const AddStudentDialog(
+      {required this.classroom, required this.addStudent, Key? key})
+      : super(key: key);
 
   final Classroom classroom;
   final Future<bool> Function(Student) addStudent;
@@ -15,7 +17,8 @@ class AddStudentDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(AppLocalizations.of(context)!.addStudentTitle),
+        title:
+            Center(child: Text(AppLocalizations.of(context)!.addStudentTitle)),
       ),
       body: AddStudentForm(
           classroom: classroom,
@@ -28,7 +31,9 @@ class AddStudentDialog extends StatelessWidget {
 }
 
 class AddStudentForm extends StatefulWidget {
-  const AddStudentForm({required this.classroom, required this.onAddStudent, Key? key}) : super(key: key);
+  const AddStudentForm(
+      {required this.classroom, required this.onAddStudent, Key? key})
+      : super(key: key);
 
   final Classroom classroom;
   final Function(Student) onAddStudent;

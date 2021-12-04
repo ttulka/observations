@@ -27,7 +27,8 @@ class StudentList extends StatefulWidget {
   Future<bool> addStudent(Student student) => _service.add(student);
   Future<bool> editStudent(Student student) => _service.edit(student);
   Future<bool> removeStudent(Student student) => _service.remove(student);
-  Future<List<Observation>> loadObservations(Student student) => _observationService.listByStudent(student);
+  Future<List<Observation>> loadObservations(Student student) =>
+      _observationService.listByStudent(student);
 
   @override
   _StudentListState createState() => _StudentListState();
@@ -56,8 +57,11 @@ class _StudentListState extends State<StudentList> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.classroom.name +
-            (widget.classroom.description.isNotEmpty ? ' (${widget.classroom.description})' : '')),
+        title: Center(
+            child: Text(widget.classroom.name +
+                (widget.classroom.description.isNotEmpty
+                    ? ' (${widget.classroom.description})'
+                    : ''))),
       ),
       body: buildFutureWidget<List<Student>>(
         future: widget.loadStudents(),
@@ -75,7 +79,9 @@ class _StudentListState extends State<StudentList> {
         ),
       ),
       floatingActionButton: buildFloatingAddButton(
-          context, (c) => AddStudentDialog(classroom: widget.classroom, addStudent: _handleAddStudent)),
+          context,
+          (c) => AddStudentDialog(
+              classroom: widget.classroom, addStudent: _handleAddStudent)),
     );
   }
 }
@@ -103,12 +109,15 @@ class StudentListItem extends StatelessWidget {
       onTap: () async {
         final result = await Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => ComposeObservationDialog(student: student, classroom: classroom)),
+          MaterialPageRoute(
+              builder: (context) => ComposeObservationDialog(
+                  student: student, classroom: classroom)),
         );
         if (result != null && result) {
           ScaffoldMessenger.of(context)
             ..removeCurrentSnackBar()
-            ..showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.editSuccess)));
+            ..showSnackBar(SnackBar(
+                content: Text(AppLocalizations.of(context)!.editSuccess)));
         }
       },
       leading: const CircleAvatar(
@@ -123,7 +132,8 @@ class StudentListItem extends StatelessWidget {
             splashRadius: 20,
             onPressed: () async {
               final observations = await loadObservations(student);
-              await showPrintDialog(context, observations, classroom: classroom, student: student);
+              await showPrintDialog(context, observations,
+                  classroom: classroom, student: student);
             },
           ),
           IconButton(
@@ -134,19 +144,23 @@ class StudentListItem extends StatelessWidget {
                 final result = await Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => EditStudentDialog(student: student, editStudent: onEditStudent)),
+                      builder: (context) => EditStudentDialog(
+                          student: student, editStudent: onEditStudent)),
                 );
                 if (result != null && result) {
                   ScaffoldMessenger.of(context)
                     ..removeCurrentSnackBar()
-                    ..showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.editSuccess)));
+                    ..showSnackBar(SnackBar(
+                        content:
+                            Text(AppLocalizations.of(context)!.editSuccess)));
                 }
               }),
           IconButton(
             icon: const Icon(Icons.remove_circle_outline),
             tooltip: AppLocalizations.of(context)!.removeStudentHint,
             splashRadius: 20,
-            onPressed: () => removalWithAlert(context, () => onRemoveStudent(student)),
+            onPressed: () =>
+                removalWithAlert(context, () => onRemoveStudent(student)),
           ),
         ]),
       ),

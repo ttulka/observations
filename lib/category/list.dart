@@ -59,7 +59,8 @@ class _CategoryListState extends State<CategoryList> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(AppLocalizations.of(context)!.listCategoryTitle),
+        title: Center(
+            child: Text(AppLocalizations.of(context)!.listCategoryTitle)),
       ),
       body: buildFutureWidget<List<Category>>(
         future: widget.loadCategories(),
@@ -73,7 +74,8 @@ class _CategoryListState extends State<CategoryList> {
                     onEditCategory: _handleEditCategory,
                     onRemoveCategory: (c) async {
                       if (categories.length == 1) {
-                        showAlert(context, AppLocalizations.of(context)!.alertAtLeastOne);
+                        showAlert(context,
+                            AppLocalizations.of(context)!.alertAtLeastOne);
                         return false;
                       }
                       return await _handleRemoveCategory(c);
@@ -82,7 +84,8 @@ class _CategoryListState extends State<CategoryList> {
               .toList(),
         ),
       ),
-      floatingActionButton: buildFloatingAddButton(context, (c) => AddCategoryDialog(addCategory: _handleAddCategory)),
+      floatingActionButton: buildFloatingAddButton(
+          context, (c) => AddCategoryDialog(addCategory: _handleAddCategory)),
     );
   }
 }
@@ -133,7 +136,8 @@ class CategoryListItem extends StatelessWidget {
             icon: const Icon(Icons.remove_circle_outline),
             tooltip: AppLocalizations.of(context)!.removeCategoryHint,
             splashRadius: 20,
-            onPressed: () => removalWithAlert(context, () => onRemoveCategory(category)),
+            onPressed: () =>
+                removalWithAlert(context, () => onRemoveCategory(category)),
           ),
         ]),
       ),
@@ -153,7 +157,8 @@ class CategoryListItem extends StatelessWidget {
     if (result != null && result) {
       ScaffoldMessenger.of(context)
         ..removeCurrentSnackBar()
-        ..showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.editSuccess)));
+        ..showSnackBar(
+            SnackBar(content: Text(AppLocalizations.of(context)!.editSuccess)));
     }
   }
 }

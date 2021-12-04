@@ -63,7 +63,7 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: Text(AppLocalizations.of(context)!.appTitle),
+        title: Center(child: Text(AppLocalizations.of(context)!.appTitle)),
         actions: [
           IconButton(
             icon: const Icon(Icons.help),
@@ -116,12 +116,15 @@ class HomePage extends StatelessWidget {
               child: InkWell(
                 child: Text(
                   link,
-                  style: const TextStyle(color: Colors.blue, decoration: TextDecoration.underline),
+                  style: const TextStyle(
+                      color: Colors.blue, decoration: TextDecoration.underline),
                 ),
                 onTap: () => launch(link),
               ),
             ),
-            Center(child: Text('\n\n' + AppLocalizations.of(context)!.aboutContent, textAlign: TextAlign.center)),
+            Center(
+                child: Text('\n\n' + AppLocalizations.of(context)!.aboutContent,
+                    textAlign: TextAlign.center)),
           ],
         ),
       ),

@@ -4,7 +4,9 @@ import 'form.dart';
 import 'domain.dart';
 
 class EditClassroomDialog extends StatelessWidget {
-  const EditClassroomDialog({required this.classroom, required this.editClassroom, Key? key}) : super(key: key);
+  const EditClassroomDialog(
+      {required this.classroom, required this.editClassroom, Key? key})
+      : super(key: key);
 
   final Classroom classroom;
   final Future<bool> Function(Classroom) editClassroom;
@@ -13,7 +15,8 @@ class EditClassroomDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(AppLocalizations.of(context)!.editClassroomTitle),
+        title: Center(
+            child: Text(AppLocalizations.of(context)!.editClassroomTitle)),
       ),
       body: EditClassroomForm(
           classroom: classroom,
@@ -26,7 +29,9 @@ class EditClassroomDialog extends StatelessWidget {
 }
 
 class EditClassroomForm extends StatefulWidget {
-  const EditClassroomForm({required this.classroom, required this.onEditClassroom, Key? key}) : super(key: key);
+  const EditClassroomForm(
+      {required this.classroom, required this.onEditClassroom, Key? key})
+      : super(key: key);
 
   final Classroom classroom;
   final Function(Classroom) onEditClassroom;
