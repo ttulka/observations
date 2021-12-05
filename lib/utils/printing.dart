@@ -11,8 +11,11 @@ import '../student/domain.dart';
 
 var _showPrintDialog_justPriting = false;
 
-Future<void> showPrintDialog(BuildContext context, List<Observation> observations,
-    {required Classroom classroom, required Student student, bool headers = true}) async {
+Future<void> showPrintDialog(
+    BuildContext context, List<Observation> observations,
+    {required Classroom classroom,
+    required Student student,
+    bool headers = true}) async {
   if (_showPrintDialog_justPriting) {
     return;
   }
@@ -42,7 +45,7 @@ Future<void> showPrintDialog(BuildContext context, List<Observation> observation
       html: '<html><body>$html</body></html>',
     ).timeout(const Duration(seconds: 5));
 
-    Printing.layoutPdf(onLayout: (PdfPageFormat format) => pdf);
+    await Printing.layoutPdf(onLayout: (PdfPageFormat format) => pdf);
   } finally {
     _showPrintDialog_justPriting = false;
   }

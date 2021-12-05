@@ -11,7 +11,7 @@ class Logger {
     final dir = await getApplicationSupportDirectory();
     final file = File('${dir.path}/observations.log');
     if (file.existsSync()) {
-      file.writeAsStringSync('Application started at ${DateTime.now()}\n');
+      file.writeAsStringSync('Application started at ${DateTime.now()}\r\n');
     }
     return file;
   }
@@ -28,8 +28,9 @@ class Logger {
       _logIt(stderr, _composeMessage('ERROR', message, e));
 
   static String _composeMessage(String level, String message, Object? e) =>
-      '${DateTime.now()} | $level: $message\n' +
-      (e != null ? '${e.toString()}\n' : '');
+      '${DateTime.now()} | $level: $message' +
+      (e != null ? e.toString() : '') +
+      '\r\n';
 
   static Future<void> _logIt(Stdout out, String message) async {
     out.write(message);
