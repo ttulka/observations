@@ -53,13 +53,13 @@ Widget buildFloatingAddButton(BuildContext context, Widget Function(BuildContext
       });
 }
 
-Future<void> actionWithAlert(
-  BuildContext context, {
-  required Future<bool> Function() action,
-  required String alertTitle,
-  required String alertText,
-  required String successText,
-}) async {
+Future<void> actionWithAlert(BuildContext context,
+    {required Future<bool> Function() action,
+    required String alertTitle,
+    required String alertText,
+    required String successText,
+    String? okText,
+    bool redButton = false}) async {
   final result = await showDialog<bool>(
     context: context,
     builder: (BuildContext context) => AlertDialog(
@@ -72,7 +72,8 @@ Future<void> actionWithAlert(
         ),
         TextButton(
           onPressed: () => Navigator.pop(context, true),
-          child: Text(AppLocalizations.of(context)!.alertOk),
+          child: Text(okText ?? AppLocalizations.of(context)!.alertOk,
+              style: redButton ? const TextStyle(color: Colors.red) : null),
         ),
       ],
     ),
@@ -91,7 +92,9 @@ Future<void> removalWithAlert(BuildContext context, Future<bool> Function() remo
       action: removeAction,
       alertTitle: AppLocalizations.of(context)!.removeAlertTitle,
       alertText: AppLocalizations.of(context)!.removeAlertText,
-      successText: AppLocalizations.of(context)!.removeSuccess);
+      successText: AppLocalizations.of(context)!.removeSuccess,
+      okText: AppLocalizations.of(context)!.removeAlertOk,
+      redButton: true);
 }
 
 Future<bool?> showAlert(BuildContext context, String text) => showDialog<bool>(

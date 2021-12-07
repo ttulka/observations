@@ -250,7 +250,7 @@ class DeltaHtmlEncoder extends Converter<String, String> {
       buffer.write(!close ? '<span style="background-color: ${attribute.value}; display: inline-block">' : '</span>');
     } else {
       buffer.write(!close ? '<span>' : '</span>');
-      print('Cannot handle attribute: $attribute');
+      Logger.info('Cannot handle attribute: $attribute');
     }
   }
 
@@ -287,7 +287,7 @@ class DeltaHtmlEncoder extends Converter<String, String> {
       buffer.write(!close ? '<p>' + ('&nbsp; &nbsp; ' * block.value) : '</p>');
     } else {
       buffer.write(!close ? '<div>' : '</div>');
-      print('Cannot handle block: $block');
+      Logger.info('Cannot handle block: $block');
     }
   }
 

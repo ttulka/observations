@@ -26,6 +26,12 @@ Future<void> execPreviewAction(BuildContext context, String cmd) async {
     case '#! h1':
       await db.updateProperty('headers', '1');
       break;
+    case '#! c0':
+      await db.updateProperty('printing_convert_html', '0');
+      break;
+    case '#! c1':
+      await db.updateProperty('printing_convert_html', '1');
+      break;
     case '#! i':
       final dbPath = (await db.DatabaseHolder.database).path;
       final storagePath = await FileStorage.directory;

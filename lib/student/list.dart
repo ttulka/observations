@@ -27,8 +27,9 @@ class StudentList extends StatefulWidget {
   Future<bool> addStudent(Student student) => _service.add(student);
   Future<bool> editStudent(Student student) => _service.edit(student);
   Future<bool> removeStudent(Student student) => _service.remove(student);
-  Future<List<Observation>> loadObservations(Student student) =>
-      _observationService.listByStudent(student);
+  Future<List<Observation>> loadObservations(Student student) => _observationService.listByStudent(student);
+
+  Future<bool> printingConvertToHtmlActive() => _observationService.printingConvertToHtmlActive();
 
   @override
   _StudentListState createState() => _StudentListState();
@@ -59,41 +60,39 @@ class _StudentListState extends State<StudentList> {
       appBar: AppBar(
         title: Center(
             child: Text(widget.classroom.name +
-                (widget.classroom.description.isNotEmpty
-                    ? ' (${widget.classroom.description})'
-                    : ''))),
+                (widget.classroom.description.isNotEmpty ? ' (${widget.classroom.description})' : ''))),
       ),
       body: buildFutureWidget<List<Student>>(
         future: widget.loadStudents(),
         buildWidget: (students) => ListView(
           padding: const EdgeInsets.symmetric(vertical: 8.0),
-          children: students.map((Student student) {
-            return StudentListItem(
-              student: student,
-              classroom: widget.classroom,
-              loadObservations: widget.loadObservations,
-              onEditStudent: _handleEditStudent,
-              onRemoveStudent: _handleRemoveStudent,
-            );
-          }).toList(),
+          children: students
+              .map((Student student) => StudentListItem(
+                    student: student,
+                    classroom: widget.classroom,
+                    loadObservations: widget.loadObservations,
+                    printingConvertToHtmlActive: widget.printingConvertToHtmlActive(),
+                    onEditStudent: _handleEditStudent,
+                    onRemoveStudent: _handleRemoveStudent,
+                  ))
+              .toList(),
         ),
       ),
       floatingActionButton: buildFloatingAddButton(
-          context,
-          (c) => AddStudentDialog(
-              classroom: widget.classroom, addStudent: _handleAddStudent)),
+          context, (c) => AddStudentDialog(classroom: widget.classroom, addStudent: _handleAddStudent)),
     );
   }
 }
 
 class StudentListItem extends StatelessWidget {
-  StudentListItem(
-      {required this.student,
-      required this.classroom,
-      required this.onEditStudent,
-      required this.onRemoveStudent,
-      required this.loadObservations})
-      : super(key: ObjectKey(student));
+  StudentListItem({
+    required this.student,
+    required this.classroom,
+    required this.onEditStudent,
+    required this.onRemoveStudent,
+    required this.loadObservations,
+    required this.printingConvertToHtmlActive,
+  }) : super(key: ObjectKey(student));
 
   final Student student;
   final Classroom classroom;
@@ -102,6 +101,7 @@ class StudentListItem extends StatelessWidget {
   final UpdateStudent onRemoveStudent;
 
   final Future<List<Observation>> Function(Student) loadObservations;
+  final Future<bool> printingConvertToHtmlActive;
 
   @override
   Widget build(BuildContext context) {
@@ -109,15 +109,12 @@ class StudentListItem extends StatelessWidget {
       onTap: () async {
         final result = await Navigator.push(
           context,
-          MaterialPageRoute(
-              builder: (context) => ComposeObservationDialog(
-                  student: student, classroom: classroom)),
+          MaterialPageRoute(builder: (context) => ComposeObservationDialog(student: student, classroom: classroom)),
         );
         if (result != null && result) {
           ScaffoldMessenger.of(context)
             ..removeCurrentSnackBar()
-            ..showSnackBar(SnackBar(
-                content: Text(AppLocalizations.of(context)!.editSuccess)));
+            ..showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.editSuccess)));
         }
       },
       leading: const CircleAvatar(
@@ -133,7 +130,7 @@ class StudentListItem extends StatelessWidget {
             onPressed: () async {
               final observations = await loadObservations(student);
               await showPrintDialog(context, observations,
-                  classroom: classroom, student: student);
+                  classroom: classroom, student: student, htmlConvert: await printingConvertToHtmlActive);
             },
           ),
           IconButton(
@@ -144,23 +141,19 @@ class StudentListItem extends StatelessWidget {
                 final result = await Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => EditStudentDialog(
-                          student: student, editStudent: onEditStudent)),
+                      builder: (context) => EditStudentDialog(student: student, editStudent: onEditStudent)),
                 );
                 if (result != null && result) {
                   ScaffoldMessenger.of(context)
                     ..removeCurrentSnackBar()
-                    ..showSnackBar(SnackBar(
-                        content:
-                            Text(AppLocalizations.of(context)!.editSuccess)));
+                    ..showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.editSuccess)));
                 }
               }),
           IconButton(
             icon: const Icon(Icons.remove_circle_outline),
             tooltip: AppLocalizations.of(context)!.removeStudentHint,
             splashRadius: 20,
-            onPressed: () =>
-                removalWithAlert(context, () => onRemoveStudent(student)),
+            onPressed: () => removalWithAlert(context, () => onRemoveStudent(student)),
           ),
         ]),
       ),

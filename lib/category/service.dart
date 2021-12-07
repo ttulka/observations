@@ -14,6 +14,7 @@ class CategoryService {
         id: maps[i]['id'],
         name: maps[i]['name'],
         template: maps[i]['template'],
+        priority: maps[i]['priority'],
       );
     });
   }
@@ -28,9 +29,10 @@ class CategoryService {
         id: record['id'],
         name: record['name'],
         template: record['template'],
+        priority: record['priority'],
       );
     }
-    return Category(id: categoryId, name: '???', template: '');
+    return Category(id: categoryId, name: '???', template: '', priority: 999999);
   }
 
   Future<bool> add(Category category) async {

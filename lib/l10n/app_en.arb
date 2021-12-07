@@ -20,6 +20,7 @@
     "copySuccess": "Copied successfully.",
     "removeAlertTitle": "Removal Confirmation",
     "removeAlertText": "Are you sure you want to remove the item?",
+    "removeAlertOk": "Remove",
     "categoryName": "Category name",
     "categoryDefaultsSocial": "Social behavior",
     "categoryDefaultsWork": "Work behavior",
