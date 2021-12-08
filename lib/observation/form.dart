@@ -97,6 +97,7 @@ class ObservationForm {
               showCameraButton: false,
               showListCheck: false,
               showBackgroundColorButton: false, // it can't be printed
+              showLink: false, // it can't be printed
             ),
           ),
           Expanded(

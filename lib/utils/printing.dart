@@ -40,11 +40,13 @@ Future<void> showPrintDialog(BuildContext context, List<Observation> observation
       final List<pw.Widget> pdf = [];
       final headerColor = PdfColor.fromHex('#666666');
       for (Observation o in observations) {
-        pdf.add(pw.Header(
-            text: composeHeader(student, classroom, o.category),
-            padding: const pw.EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-            textStyle: pw.TextStyle(color: headerColor, decorationColor: headerColor)));
-        pdf.addAll(deltaToPdf(o.content));
+        if (o.content.length > 20) {
+          pdf.add(pw.Header(
+              text: composeHeader(student, classroom, o.category),
+              padding: const pw.EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+              textStyle: pw.TextStyle(color: headerColor, decorationColor: headerColor)));
+          pdf.addAll(deltaToPdf(o.content));
+        }
       }
       final doc = pw.Document(
           theme: pw.ThemeData.withFont(
@@ -53,11 +55,13 @@ Future<void> showPrintDialog(BuildContext context, List<Observation> observation
               italic: pw.Font.ttf(await rootBundle.load("assets/OpenSans-Italic.ttf")),
               boldItalic: pw.Font.ttf(await rootBundle.load("assets/OpenSans-BoldItalic.ttf"))));
       doc.addPage(pw.MultiPage(pageFormat: PdfPageFormat.a4, build: (pw.Context context) => pdf));
-      await Printing.layoutPdf(onLayout: (PdfPageFormat format) async => doc.save());
+
+      await Printing.layoutPdf(onLayout: (PdfPageFormat format) => doc.save());
       return;
     }
 
     final html = observations
+        .where((o) => o.content.length > 20)
         .map((o) =>
             (headers
                 ? '<p style="color: #666666; padding: 5px; padding-top: 20px"><b>' +

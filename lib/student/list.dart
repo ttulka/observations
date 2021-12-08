@@ -66,16 +66,18 @@ class _StudentListState extends State<StudentList> {
         future: widget.loadStudents(),
         buildWidget: (students) => ListView(
           padding: const EdgeInsets.symmetric(vertical: 8.0),
-          children: students
-              .map((Student student) => StudentListItem(
-                    student: student,
-                    classroom: widget.classroom,
-                    loadObservations: widget.loadObservations,
-                    printingConvertToHtmlActive: widget.printingConvertToHtmlActive(),
-                    onEditStudent: _handleEditStudent,
-                    onRemoveStudent: _handleRemoveStudent,
-                  ))
-              .toList(),
+          children: students.isNotEmpty
+              ? students
+                  .map((Student student) => StudentListItem(
+                        student: student,
+                        classroom: widget.classroom,
+                        loadObservations: widget.loadObservations,
+                        printingConvertToHtmlActive: widget.printingConvertToHtmlActive(),
+                        onEditStudent: _handleEditStudent,
+                        onRemoveStudent: _handleRemoveStudent,
+                      ))
+                  .toList()
+              : [emptyListTile(AppLocalizations.of(context)!.emptyStudentList)],
         ),
       ),
       floatingActionButton: buildFloatingAddButton(

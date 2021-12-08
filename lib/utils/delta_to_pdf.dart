@@ -20,10 +20,6 @@ List<pw.Widget> deltaToPdf(String delta) {
 }
 
 class _AstPdfEncoder extends Converter<List<_Elem>, List<pw.Widget>> {
-  final grayDark = PdfColor.fromHex('#333333');
-  final grayLight = PdfColor.fromHex('#666666');
-  final grayThy = PdfColor.fromHex('#dddddd');
-
   @override
   List<pw.Widget> convert(List<_Elem> input) {
     String previousKind = 'none';
@@ -44,8 +40,20 @@ class _AstPdfEncoder extends Converter<List<_Elem>, List<pw.Widget>> {
 
   List<pw.Widget> _childrenToWidget(List<_Elem> elems, _Elem parent) {
     if (elems.isNotEmpty) {
+      // clean up spaces -> elements with only spaces are not rendered, merge (add) spaces with previous elements
+      final List<_Elem> cleanElems = [];
+      _Elem previous = _Elem();
+      for (_Elem el in elems) {
+        if (' ' == el.text) {
+          if (!previous.text!.endsWith(' ')) previous.text = '${previous.text} ';
+        } else {
+          cleanElems.add(el);
+          previous = el;
+        }
+      }
+
       int i = 0;
-      return elems.map((el) => _spanToWidget(el, parent, i++)).toList();
+      return cleanElems.map((el) => _spanToWidget(el, parent, i++)).toList();
     }
     return [pw.Paragraph(text: parent.text != null ? parent.text! : '')];
   }
@@ -54,14 +62,21 @@ class _AstPdfEncoder extends Converter<List<_Elem>, List<pw.Widget>> {
     final List<_Elem> results = [];
     for (_Elem el in elems) {
       if (el.text != null) {
-        el.text!.split(RegExp(' ')).map((t) => el.cloneWith(t)).forEach((e) => results.add(e));
+        final String text = el.text!;
+        // split only text that contains multiple words
+        if (RegExp(r'[^\s]+\s[^\s]+').hasMatch(text)) {
+          results.addAll(el.text!.split(RegExp(' ')).map((t) => el.cloneWith('$t ')));
+          results.last.text = results.last.text!.trimRight(); // remove last space (due to 'lastword ' + '.' issues)
+        } else {
+          results.add(el);
+        }
       }
     }
     return results;
   }
 
   pw.Widget _spanToWidget(_Elem elem, _Elem parent, int i) {
-    final String text = (elem.text ?? '').trim();
+    final String text = elem.text ?? '';
 
     pw.FontWeight? fontWeight;
     pw.FontStyle? fontStyle;
@@ -71,6 +86,10 @@ class _AstPdfEncoder extends Converter<List<_Elem>, List<pw.Widget>> {
     final List<pw.TextDecoration> decorations = [];
 
     if (elem.attrs != null) {
+      if (elem.attrs!.containsKey('link')) {
+        fontColor = PdfColors.blue;
+        decorations.add(pw.TextDecoration.underline);
+      }
       if (elem.attrs!['bold'] == true) {
         fontWeight = pw.FontWeight.bold;
       }
@@ -91,17 +110,15 @@ class _AstPdfEncoder extends Converter<List<_Elem>, List<pw.Widget>> {
     if ('header' == parent.kind) {
       fontSize = 25.0 - (parent.attrs!['header'] * 3);
     } else if ('code-block' == parent.kind) {
-      fontColor = grayLight;
+      fontColor = PdfColors.grey700;
       fontSize = 11;
       fontFamily = pw.Font.courier();
     } else if ('blockquote' == parent.kind) {
-      fontColor = grayDark;
-      fontStyle = pw.FontStyle.italic;
+      fontColor = PdfColors.grey800;
       fontSize = 12;
     }
 
-    return pw.Text('$text ',
-        overflow: pw.TextOverflow.span,
+    final textWidget = pw.Text(text,
         style: pw.TextStyle(
             fontWeight: fontWeight,
             fontStyle: fontStyle,
@@ -109,6 +126,10 @@ class _AstPdfEncoder extends Converter<List<_Elem>, List<pw.Widget>> {
             font: fontFamily,
             color: fontColor,
             decoration: pw.TextDecoration.combine(decorations)));
+
+    return elem.attrs!.containsKey('link')
+        ? pw.UrlLink(child: textWidget, destination: elem.attrs!['link'])
+        : textWidget;
   }
 
   pw.Widget _blockToWidget(_Elem elem, String previousKind) {
@@ -128,7 +149,8 @@ class _AstPdfEncoder extends Converter<List<_Elem>, List<pw.Widget>> {
         widget = pw.Container(
             child: children.length == 1 ? children.first : pw.Wrap(children: children),
             padding: const pw.EdgeInsets.only(left: 12),
-            decoration: pw.BoxDecoration(border: pw.Border(left: pw.BorderSide(color: grayThy, width: 8))));
+            decoration:
+                const pw.BoxDecoration(border: pw.Border(left: pw.BorderSide(color: PdfColors.grey300, width: 8))));
         break;
       case 'list':
         final bullet = elem.attrs!.containsKey('count')
@@ -145,7 +167,7 @@ class _AstPdfEncoder extends Converter<List<_Elem>, List<pw.Widget>> {
         break;
       case 'code-block':
         final bullet = pw.Text('${elem.attrs!['count']}',
-            style: pw.TextStyle(font: pw.Font.courierOblique(), fontSize: 11, color: grayLight));
+            style: pw.TextStyle(font: pw.Font.courierOblique(), fontSize: 11, color: PdfColors.grey700));
         final line = pw.Wrap(children: [
           pw.Container(
               child: bullet,
@@ -226,8 +248,7 @@ class _DeltaAstEncoder extends Converter<String, List<_Elem>> {
   void _handleInline(String text, Map<String, dynamic>? attributes) {
     final style = Style.fromJson(attributes);
 
-    text = text.trimLeft();
-
+    //text = text.trimLeft();
     if (text.isNotEmpty) {
       if (style.attributes.isNotEmpty) {
         // Now open any new styles.

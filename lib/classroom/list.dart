@@ -63,7 +63,9 @@ class _ClassroomListState extends State<ClassroomList> {
         future: widget.loadClassrooms(),
         buildWidget: (categories) => ListView(
           padding: const EdgeInsets.symmetric(vertical: 8.0),
-          children: _buildItems(categories),
+          children: categories.isNotEmpty
+              ? _buildItems(categories)
+              : [emptyListTile(AppLocalizations.of(context)!.emptyClassroomList)],
         ),
       ),
       floatingActionButton: buildFloatingAddButton(

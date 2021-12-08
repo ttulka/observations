@@ -51,7 +51,8 @@ class ComposeObservationDialog extends StatelessWidget {
             floatingActionButton: FloatingActionButton(
               tooltip: AppLocalizations.of(context)!.printHint,
               child: const Icon(Icons.print),
-              backgroundColor: Colors.grey,
+              foregroundColor: Colors.blue,
+              backgroundColor: Colors.white,
               onPressed: () async {
                 if (currentObservation != null) {
                   await showPrintDialog(context, [currentObservation!],

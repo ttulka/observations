@@ -20,9 +20,9 @@ class ClassroomForm {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _newTextField(context, AppLocalizations.of(context)!.classroomName, nameController, true, 5),
+            _newTextField(context, AppLocalizations.of(context)!.classroomDescription, descController, false, 50),
             _newTextField(context, AppLocalizations.of(context)!.classroomYear, yearController, true, 4,
                 filter: RegExp(r'^\d{4}$')),
-            _newTextField(context, AppLocalizations.of(context)!.classroomDescription, descController, false, 50),
             Padding(
               padding: const EdgeInsets.only(top: 16, bottom: 32),
               child: ElevatedButton(

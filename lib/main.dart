@@ -15,8 +15,8 @@ void main() {
   WidgetsFlutterBinding.ensureInitialized();
   try {
     if (Platform.isWindows || Platform.isMacOS || Platform.isLinux) {
-      const width = 1024.0;
-      const height = 800.0;
+      const width = 850.0;
+      const height = 600.0;
       setWindowTitle(appTitle);
       setWindowMinSize(const Size(width, height));
       //setWindowFrame(const Rect.fromLTWH(50, 50, width, height));
@@ -116,15 +116,12 @@ class HomePage extends StatelessWidget {
               child: InkWell(
                 child: Text(
                   link,
-                  style: const TextStyle(
-                      color: Colors.blue, decoration: TextDecoration.underline),
+                  style: const TextStyle(color: Colors.blue, decoration: TextDecoration.underline),
                 ),
                 onTap: () => launch(link),
               ),
             ),
-            Center(
-                child: Text('\n\n' + AppLocalizations.of(context)!.aboutContent,
-                    textAlign: TextAlign.center)),
+            Center(child: Text('\n\n' + AppLocalizations.of(context)!.aboutContent, textAlign: TextAlign.center)),
           ],
         ),
       ),

@@ -109,3 +109,11 @@ Future<bool?> showAlert(BuildContext context, String text) => showDialog<bool>(
         ],
       ),
     );
+
+ListTile emptyListTile(String text) => ListTile(
+      title: Text(
+        text,
+        style: const TextStyle(color: Colors.grey, fontStyle: FontStyle.italic),
+      ),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 48),
+    );
