@@ -136,6 +136,21 @@ class StudentListItem extends StatelessWidget {
             },
           ),
           IconButton(
+            icon: const Icon(Icons.picture_as_pdf),
+            tooltip: AppLocalizations.of(context)!.pdfStudentObservationsHint,
+            splashRadius: 20,
+            onPressed: () async {
+              final observations = await loadObservations(student);
+              final result = await showSaveDialog(context, observations,
+                  classroom: classroom, student: student, htmlConvert: await printingConvertToHtmlActive);
+              if (result) {
+                ScaffoldMessenger.of(context)
+                  ..removeCurrentSnackBar()
+                  ..showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.saveSuccess)));
+              }
+            },
+          ),
+          IconButton(
               icon: const Icon(Icons.edit),
               tooltip: AppLocalizations.of(context)!.editStudentHint,
               splashRadius: 20,

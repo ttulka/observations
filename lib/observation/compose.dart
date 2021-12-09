@@ -56,7 +56,10 @@ class ComposeObservationDialog extends StatelessWidget {
               onPressed: () async {
                 if (currentObservation != null) {
                   await showPrintDialog(context, [currentObservation!],
-                      classroom: classroom, student: student, headers: await headers, htmlConvert: await htmlConvert);
+                      classroom: classroom,
+                      student: student,
+                      printHeaders: await headers,
+                      htmlConvert: await htmlConvert);
                 }
               },
             ),

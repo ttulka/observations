@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "Tomas Tulka (ttulka.com)" "\0"
-            VALUE "FileDescription", "Student observations" "\0"
+            VALUE "FileDescription", "Student Observations" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
             VALUE "InternalName", "observations" "\0"
             VALUE "LegalCopyright", "MIT License" "\0"
             VALUE "OriginalFilename", "observations.exe" "\0"
-            VALUE "ProductName", "observations" "\0"
+            VALUE "ProductName", "Student Observations" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

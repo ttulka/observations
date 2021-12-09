@@ -3,7 +3,7 @@
   "menuCategories": "Kategorien",
   "menuAbout": "About",
   "aboutTitle": "Über diese Anwendung",
-  "aboutContent": "Kostenlose und Open-Source-Software für Lehrer, um Schülerbeobachtungen zu schreiben.\n\nDokumente werden nur lokal gespeichert - keine Daten werden jemals Ihren Laptop verlassen!\n\nSiehe den Link oben, um weitere Informationen zu erhalten diese Anwendung.\n\n\n***\n\n\nVersion alpha-0.0.0\n\nErstellt von Tomas Tulka (ttulka.com)\n\nDiese Software wird unter der MIT-Lizenz entwickelt und vertrieben\n(https://opensource.org/licenses/MIT).",
+  "aboutContent": "Kostenlose und Open-Source-Software für Lehrer, um Schülerbeobachtungen zu schreiben.\n\nDokumente werden nur lokal gespeichert - keine Daten werden jemals Ihren Laptop verlassen!\n\nSiehe den Link oben, um weitere Informationen zu erhalten diese Anwendung.\n\n\n***\n\n\nVersion alpha-0.1.0\n\nErstellt von Tomas Tulka (ttulka.com)\n\nDiese Software wird unter der MIT-Lizenz entwickelt und vertrieben\n(https://opensource.org/licenses/MIT).",
   "aboutLink": "https://github.com/ttulka/observations",
   "formSave": "Speichern",
   "formRequired": "Erforderlich",
@@ -18,6 +18,7 @@
   "editSuccess": "Erfolgreich bearbeitet.",
   "removeSuccess": "Erfolgreich entfernt.",
   "copySuccess": "Erfolgreich kopiert.",
+  "saveSuccess": "Erfolgreich gespeichert.",
   "removeAlertTitle": "Entfernungsbestätigung",
   "removeAlertText": "Möchten Sie das Element wirklich entfernen?",
   "removeAlertOk": "Entfernen",
@@ -49,5 +50,6 @@
   "editStudentTitle": "Bearbeiten eines Schülers",
   "editStudentHint": "Diesen Schüler bearbeiten",
   "removeStudentHint": "Diesen Schüler entfernen",
-  "printStudentObservationsHint": "Alle Schülerbeobachtungen drucken"
+  "printStudentObservationsHint": "Schülerbeobachtungen drucken",
+  "pdfStudentObservationsHint": "Schülerbeobachtungen als PDF spreichern"
 }
