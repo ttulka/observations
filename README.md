@@ -53,7 +53,10 @@ Follow the installation instructions for your platform:
 
 ### On Windows 
 
-Tbd
+1. [Download the archive](https://github.com/ttulka/observations/releases/download/alpha-0.1.1/observations-windows-alpha-0.1.1.zip)
+2. Unpack it into any directory (e.g. `C:\Users\<user>\`)
+3. Open the directory and run the `observations.exe` executable
+4. (optionally) Create a shortcut of the `observation.exe` file and copy it to the Desktop
 
 ### On Mac
 
