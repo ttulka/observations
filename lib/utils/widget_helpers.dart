@@ -39,9 +39,9 @@ Widget buildFutureWidget<T>({required Future<T> future, required Widget Function
   );
 }
 
-Widget buildFloatingAddButton(BuildContext context, Widget Function(BuildContext) buildDialog) {
+Widget buildFloatingAddButton(BuildContext context, String hintText, Widget Function(BuildContext) buildDialog) {
   return FloatingActionButton(
-      tooltip: AppLocalizations.of(context)!.addClassroomTitle,
+      tooltip: hintText,
       child: const Icon(Icons.add),
       onPressed: () async {
         final result = await Navigator.push(context, MaterialPageRoute(builder: buildDialog));

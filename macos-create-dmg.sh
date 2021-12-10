@@ -1,5 +1,5 @@
 #!/bin/sh
-rm -f StudentObservations-Installer.dmg
+rm -f *StudentObservations-Installer.dmg
 rm -rf build/macos/Release
 mkdir -p build/macos/Release
 cp -r "build/macos/Build/Products/Release/Student Observations.app" build/macos/Release/

@@ -50,8 +50,8 @@ class CategoryService {
   Future<bool> remove(Category category) async {
     final Database db = await DatabaseHolder.database;
     final prio = await _getPriority(category);
-    await db.execute('UPDATE $table SET deleted = TRUE WHERE id = ?', [category.id]);
-    await db.execute('UPDATE $table SET priority = priority - 1 WHERE priority > ?', [prio]);
+    await db.execute('UPDATE $table SET deleted = TRUE, priority = priority + 1000 WHERE id = ?', [category.id]);
+    await db.execute('UPDATE $table SET priority = priority - 1 WHERE priority > ? AND deleted = FALSE', [prio]);
     return true;
   }
 
@@ -88,7 +88,8 @@ class CategoryService {
 
   Future<int> _getMaxPriority() async {
     final Database db = await DatabaseHolder.database;
-    final List<Map<String, dynamic>> maps = await db.query(table, columns: ['MAX(priority) as priority']);
+    final List<Map<String, dynamic>> maps =
+        await db.query(table, columns: ['MAX(priority) as priority'], where: 'deleted = FALSE');
     final result = maps.isNotEmpty ? maps.first['priority'] : 1;
     return result;
   }

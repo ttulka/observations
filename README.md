@@ -47,6 +47,8 @@ Please [contact us](https://github.com/ttulka/observations/issues) when facing a
 
 ## Installation
 
+> _Disclaimer:_ ​​As there is no commercial company behind this you need to accept the software as unverified when running for the first time. We're sorry for this inconvenience!
+
 Follow the installation instructions for your platform:
 
 ### On Windows 
@@ -55,21 +57,26 @@ Tbd
 
 ### On Mac
 
-Tbd
+1. [Download the installer package](https://github.com/ttulka/observations/releases/download/alpha-0.1.0/StudentObservations-Installer-macos-alpha-0.1.0.dmg)
+2. Open the installer and move the app into the Applications
+3. Run the app from the Applications
 
-### On Linux
+### On Linux (Ubuntu)
 
-Tbd
+1. [Download the archive](https://github.com/ttulka/observations/releases/download/alpha-0.0.0/observations-linux-alpha-0.0.0.zip)
+2. Unpack it into any directory
+3. Open the directory and run the `observations` executable
 
-#### Ubuntu
+#### Prerequisites:
 
 ```sh
-sudo apt-get -y install libsqlite3-0 libsqlite3-dev
+# make sure that the sqlite3 lib is present in your system:
+sudo apt-get -y install libsqlite3-0
 ```
 
 ## Contributions and development 
 
-Contributions and translations are very welcome! Please make sure your chance works on all supported platforms.
+Contributions and translations are very welcome! Please make sure your change works on all supported platforms.
 
 ### Tech stack
 - Flutter

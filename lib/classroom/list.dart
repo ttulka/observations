@@ -68,8 +68,8 @@ class _ClassroomListState extends State<ClassroomList> {
               : [emptyListTile(AppLocalizations.of(context)!.emptyClassroomList)],
         ),
       ),
-      floatingActionButton: buildFloatingAddButton(
-          context, (c) => AddClassroomDialog(addClassroom: (c) => _handleAddClassroom(c, context))),
+      floatingActionButton: buildFloatingAddButton(context, AppLocalizations.of(context)!.addClassroomTitle,
+          (ctx) => AddClassroomDialog(addClassroom: (c) => _handleAddClassroom(c, ctx))),
     );
   }
 

@@ -80,8 +80,8 @@ class _StudentListState extends State<StudentList> {
               : [emptyListTile(AppLocalizations.of(context)!.emptyStudentList)],
         ),
       ),
-      floatingActionButton: buildFloatingAddButton(
-          context, (c) => AddStudentDialog(classroom: widget.classroom, addStudent: _handleAddStudent)),
+      floatingActionButton: buildFloatingAddButton(context, AppLocalizations.of(context)!.addStudentTitle,
+          (ctx) => AddStudentDialog(classroom: widget.classroom, addStudent: _handleAddStudent)),
     );
   }
 }

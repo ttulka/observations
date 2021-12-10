@@ -3,7 +3,7 @@
     "menuCategories": "Categories",
     "menuAbout": "About",
     "aboutTitle": "About this application",
-    "aboutContent": "Free and open-source software for school teachers to write student observations.\n\nDocuments stored only locally - no piece of data will ever leave your laptop!\n\nCheck out the link above to see more info about this application.\n\n\n***\n\n\nVersion alpha-0.1.0\n\nCreated by Tomas Tulka (ttulka.com)\n\nThis software is developed and distributed under the MIT License\n(https://opensource.org/licenses/MIT).",
+    "aboutContent": "Free and open-source software for school teachers to write student observations.\n\nDocuments stored only locally - no piece of data will ever leave your laptop!\n\nCheck out the link above to see more info about this application.\n\n\n***\n\n\nVersion alpha-0.1.1\n\nCreated by Tomas Tulka (ttulka.com)\n\nThis software is developed and distributed under the MIT License\n(https://opensource.org/licenses/MIT).",
     "aboutLink": "https://github.com/ttulka/observations",
     "formSave": "Save",
     "formRequired": "Required",
