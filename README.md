@@ -47,7 +47,7 @@ Please [contact us](https://github.com/ttulka/observations/issues) when facing a
 
 ## Installation
 
-> _Disclaimer:_ ​​As there is no commercial company behind this you need to accept the software as unverified when running for the first time. We're sorry for this inconvenience!
+> _**Disclaimer:**_ ​​As there is no commercial company behind this you need to accept the software as unverified when running for the first time. We're sorry for this inconvenience!
 
 Follow the installation instructions for your platform:
 
@@ -57,13 +57,13 @@ Tbd
 
 ### On Mac
 
-1. [Download the installer package](https://github.com/ttulka/observations/releases/download/alpha-0.1.0/StudentObservations-Installer-macos-alpha-0.1.0.dmg)
+1. [Download the installer package](https://github.com/ttulka/observations/releases/download/alpha-0.1.1/StudentObservations-Installer-macos-alpha-0.1.1.dmg)
 2. Open the installer and move the app into the Applications
 3. Run the app from the Applications
 
 ### On Linux (Ubuntu)
 
-1. [Download the archive](https://github.com/ttulka/observations/releases/download/alpha-0.0.0/observations-linux-alpha-0.0.0.zip)
+1. [Download the archive](https://github.com/ttulka/observations/releases/download/alpha-0.0.0/observations-linux-alpha-0.1.1.zip)
 2. Unpack it into any directory
 3. Open the directory and run the `observations` executable
 
