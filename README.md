@@ -25,9 +25,9 @@ This software is free to use but you are welcome to <a href="https://www.buymeac
 
 ## Overview
 
-Tbd
+![Student Observations App](docs/screenshots/observations.png)
 
-See the [Wiki](https://github.com/ttulka/observations/wiki) pages for more details.
+See the [User Manual](https://github.com/ttulka/observations/wiki/User-Manual) for more details.
 
 ## Platform support
 
