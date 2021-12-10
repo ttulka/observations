@@ -63,7 +63,7 @@ Tbd
 
 ### On Linux (Ubuntu)
 
-1. [Download the archive](https://github.com/ttulka/observations/releases/download/alpha-0.0.0/observations-linux-alpha-0.1.1.zip)
+1. [Download the archive](https://github.com/ttulka/observations/releases/download/alpha-0.1.1/observations-linux-alpha-0.1.1.zip)
 2. Unpack it into any directory
 3. Open the directory and run the `observations` executable
 
