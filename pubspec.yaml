@@ -40,8 +40,8 @@ dependencies:
   sqlite3_library_windows: ^2.1.0  # needed to run on Windows (sqlite3.dll must be copied into the run directory)
   path: ^1.8.0
   path_provider: ^2.0.7
-  pdf: ^3.6.3
-  printing: ^5.6.3
+  pdf: ^3.6.5
+  printing: ^5.6.6
   file_picker: ^4.2.7
   window_size:
     git:
