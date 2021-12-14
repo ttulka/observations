@@ -2,11 +2,13 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:window_size/window_size.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'utils/logger.dart';
 import 'classroom/list.dart';
 import 'category/list.dart';
+import 'meeting/template.dart';
 
 const appTitle = 'Student Observations';
 const color = Colors.blue;
@@ -60,6 +62,8 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final Locale locale = Localizations.localeOf(context);
+    initializeDateFormatting(locale.countryCode, null);
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
@@ -83,26 +87,24 @@ class HomePage extends StatelessWidget {
               ),
               child: Icon(Icons.settings, size: 48),
             ),
-            ListTile(
-              title: Text(AppLocalizations.of(context)!.menuCategories),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => CategoryList(),
-                  ),
-                );
-                final state = _scaffoldKey.currentState;
-                if (state != null && state.isDrawerOpen) {
-                  state.openEndDrawer();
-                }
-              },
-            ),
+            _listTile(AppLocalizations.of(context)!.menuCategories, context, (ctx) => CategoryList()),
+            _listTile(AppLocalizations.of(context)!.menuMeetingTemplate, context, (ctx) => TemplateMeetingDialog()),
           ],
         ),
       ),
     );
   }
+
+  ListTile _listTile(String label, BuildContext context, Widget Function(BuildContext) builder) => ListTile(
+        title: Text(label),
+        onTap: () {
+          Navigator.push(context, MaterialPageRoute(builder: builder));
+          final state = _scaffoldKey.currentState;
+          if (state != null && state.isDrawerOpen) {
+            state.openEndDrawer();
+          }
+        },
+      );
 
   static Route<Object?> _aboutDialog(BuildContext context, Object? arguments) {
     final link = AppLocalizations.of(context)!.aboutLink;

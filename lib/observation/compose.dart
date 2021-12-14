@@ -2,13 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../utils/widget_helpers.dart';
 import '../utils/printing.dart';
-import 'domain.dart';
+import '../property/service.dart';
 import '../student/domain.dart';
 import '../classroom/domain.dart';
+import 'domain.dart';
 import 'service.dart';
 import 'form.dart';
-
-typedef SaveObservation = Function(Observation observation);
 
 class ComposeObservationDialog extends StatelessWidget {
   ComposeObservationDialog({required this.student, required this.classroom, Key? key}) : super(key: key);
@@ -16,15 +15,16 @@ class ComposeObservationDialog extends StatelessWidget {
   final Student student;
   final Classroom classroom;
 
+  final _propertyService = PropertyService();
   final _observationService = ObservationService();
 
   Future<bool> saveObservation(Observation observation) => _observationService.save(observation);
 
   @override
   Widget build(BuildContext context) {
-    final autosave = _observationService.autosaveActive();
-    final headers = _observationService.headersActive();
-    final htmlConvert = _observationService.printingConvertToHtmlActive();
+    final autosave = _propertyService.autosaveActive();
+    final headers = _propertyService.headersActive();
+    final htmlConvert = _propertyService.printingConvertToHtmlActive();
     return buildFutureWidget<List<Observation>>(
       future: _observationService.prepareAllByStudent(student),
       buildWidget: (observations) {
@@ -55,7 +55,7 @@ class ComposeObservationDialog extends StatelessWidget {
               backgroundColor: Colors.white,
               onPressed: () async {
                 if (currentObservation != null) {
-                  await showPrintDialog(context, [currentObservation!],
+                  await showPrintDialogForObservations(context, [currentObservation!],
                       classroom: classroom,
                       student: student,
                       printHeaders: await headers,
@@ -75,7 +75,7 @@ class ComposeObservationForm extends StatefulWidget {
       {required this.onSaveObservation, required this.observations, required this.obtainAutosave, Key? key})
       : super(key: key);
 
-  final SaveObservation onSaveObservation;
+  final Function(Observation observation) onSaveObservation;
   final List<Observation> observations;
   final Future<bool> obtainAutosave;
 

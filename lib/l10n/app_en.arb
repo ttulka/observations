@@ -1,9 +1,10 @@
 {
     "appTitle": "Student Observations",
     "menuCategories": "Categories",
+    "menuMeetingTemplate": "Consultation Template",
     "menuAbout": "About",
     "aboutTitle": "About this application",
-    "aboutContent": "Free and open-source software for school teachers to write student observations.\n\nDocuments stored only locally - no piece of data will ever leave your laptop!\n\nCheck out the link above to see more info about this application.\n\n\n***\n\n\nVersion alpha-0.1.1\n\nCreated by Tomas Tulka (ttulka.com)\n\nThis software is developed and distributed under the MIT License\n(https://opensource.org/licenses/MIT).",
+    "aboutContent": "Free and open-source software for school teachers to write student observations.\n\nDocuments stored only locally - no piece of data will ever leave your laptop!\n\nCheck out the link above to see more info about this application.\n\n\n***\n\n\nVersion alpha-0.2.0\n\nCreated by Tomas Tulka (ttulka.com)\n\nThis software is developed and distributed under the MIT License\n(https://opensource.org/licenses/MIT).",
     "aboutLink": "https://github.com/ttulka/observations",
     "formSave": "Save",
     "formRequired": "Required",
@@ -51,5 +52,17 @@
     "editStudentHint": "Edit this student",
     "removeStudentHint": "Remove this student",
     "printStudentObservationsHint": "Print student's observations",
-    "pdfStudentObservationsHint": "Save student's observations as PDF"
+    "pdfStudentObservationsHint": "Save student's observations as PDF",
+    "meetingStudentHint": "Consultations",
+    "printMeetingsHint": "Pring consultation notes",
+    "pdfMeetingsHint": "Save consultation notes as PDF",
+    "meetingListTitle": "Consultations for",
+    "meetingComposeTitle": "Consultation for",
+    "meetingAt": "Date",
+    "meetingSubject": "Subject (optional)",
+    "emptyMeetingList": "...add a new consultation by clicking the ⊕ button",
+    "editMeetingHint": "Edit this consultation",
+    "removeMeetingHint": "Remove this consultation",
+    "addMeetingTitle": "Add a new consultation",
+    "templateMeetingTitle": "Consultation template"
 }

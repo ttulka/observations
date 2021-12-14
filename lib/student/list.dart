@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:observations/observation/domain.dart';
-import 'package:observations/observation/service.dart';
 import '../utils/widget_helpers.dart';
 import '../utils/printing.dart';
-import 'service.dart';
-import 'domain.dart';
+import '../property/service.dart';
 import '../classroom/domain.dart';
 import '../observation/domain.dart';
 import '../observation/service.dart';
+import '../observation/compose.dart';
+import '../meeting/list.dart';
+import 'domain.dart';
+import 'service.dart';
 import 'add.dart';
 import 'edit.dart';
-import '../observation/compose.dart';
 
 typedef UpdateStudent = Future<bool> Function(Student student);
 
@@ -22,6 +22,7 @@ class StudentList extends StatefulWidget {
 
   final StudentService _service = StudentService();
   final ObservationService _observationService = ObservationService();
+  final PropertyService _propertyService = PropertyService();
 
   Future<List<Student>> loadStudents() => _service.listByClassroom(classroom);
   Future<bool> addStudent(Student student) => _service.add(student);
@@ -29,7 +30,7 @@ class StudentList extends StatefulWidget {
   Future<bool> removeStudent(Student student) => _service.remove(student);
   Future<List<Observation>> loadObservations(Student student) => _observationService.listByStudent(student);
 
-  Future<bool> printingConvertToHtmlActive() => _observationService.printingConvertToHtmlActive();
+  Future<bool> printingConvertToHtmlActive() => _propertyService.printingConvertToHtmlActive();
 
   @override
   _StudentListState createState() => _StudentListState();
@@ -131,7 +132,7 @@ class StudentListItem extends StatelessWidget {
             splashRadius: 20,
             onPressed: () async {
               final observations = await loadObservations(student);
-              await showPrintDialog(context, observations,
+              await showPrintDialogForObservations(context, observations,
                   classroom: classroom, student: student, htmlConvert: await printingConvertToHtmlActive);
             },
           ),
@@ -141,13 +142,24 @@ class StudentListItem extends StatelessWidget {
             splashRadius: 20,
             onPressed: () async {
               final observations = await loadObservations(student);
-              final result = await showSaveDialog(context, observations,
+              final result = await showSaveDialogForObservations(context, observations,
                   classroom: classroom, student: student, htmlConvert: await printingConvertToHtmlActive);
               if (result) {
                 ScaffoldMessenger.of(context)
                   ..removeCurrentSnackBar()
                   ..showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.saveSuccess)));
               }
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.people),
+            tooltip: AppLocalizations.of(context)!.meetingStudentHint,
+            splashRadius: 20,
+            onPressed: () async {
+              await Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => MeetingList(student: student, classroom: classroom)),
+              );
             },
           ),
           IconButton(

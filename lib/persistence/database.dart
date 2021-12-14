@@ -14,10 +14,11 @@ class DatabaseHolder {
 
   static Future<Database> _connectDatabase() async {
     databaseFactory = databaseFactoryFfi;
-    final db = await openDatabase(
+    final Database db = await openDatabase(
       join((await getApplicationSupportDirectory()).path, 'observations.db'),
       version: 1,
       onCreate: (db, version) async {
+        Logger.debug('Creating schema version 0');
         await db.execute(
             r'CREATE TABLE classrooms(id TEXT NOT NULL PRIMARY KEY, name TEXT NOT NULL, description TEXT, year INTEGER NOT NULL, deleted INTEGER NOT NULL DEFAULT 0)');
         await db.execute(r'CREATE INDEX classrooms_deletedIdx ON classrooms (deleted)');
@@ -31,7 +32,7 @@ class DatabaseHolder {
         await db.execute(
             r'CREATE TABLE observations(id TEXT NOT NULL PRIMARY KEY, updatedAt TEXT NOT NULL, studentId TEXT NOT NULL, categoryId TEXT NOT NULL, deleted INTEGER NOT NULL DEFAULT 0, FOREIGN KEY(studentId) REFERENCES students(id), FOREIGN KEY(categoryId) REFERENCES categories(id))');
         await db.execute(r'CREATE INDEX observations_deletedIdx ON observations (deleted)');
-        await db.execute(r'CREATE INDEX observations_studentIdx ON observations (categoryId)');
+        await db.execute(r'CREATE INDEX observations_studentIdx ON observations (studentId)');
         await db.execute(r'CREATE INDEX observations_categoryIdx ON observations (categoryId)');
         await db.execute(r'CREATE TABLE properties(key TEXT NOT NULL PRIMARY KEY, value TEXT NOT NULL)');
 
@@ -47,6 +48,23 @@ class DatabaseHolder {
         }
       },
     );
+
+    // updating schema
+    final List<Map<String, dynamic>> maps = await db.query('properties', columns: ['value'], where: "key = 'version'");
+    String version = maps.first['value'];
+
+    if ('0' == version) {
+      Logger.debug('Updating schema to version 1');
+      await db.execute(
+          r'CREATE TABLE meetings(id TEXT NOT NULL PRIMARY KEY, at TEXT NOT NULL, subject TEXT, studentId TEXT NOT NULL, deleted INTEGER NOT NULL DEFAULT 0)');
+      await db.execute(r'CREATE INDEX meetings_deletedIdx ON meetings (deleted)');
+      await db.execute(r'CREATE INDEX meetings_studentIdx ON meetings (studentId)');
+      await db.execute("INSERT INTO properties VALUES ('meeting_template', '')");
+
+      db.update('properties', {'value': '1'}, where: "key = 'version'");
+      version = '1';
+    }
+
     Logger.info("Database path: " + db.path);
     return db;
   }
