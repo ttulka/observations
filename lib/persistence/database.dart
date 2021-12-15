@@ -18,7 +18,7 @@ class DatabaseHolder {
       join((await getApplicationSupportDirectory()).path, 'observations.db'),
       version: 1,
       onCreate: (db, version) async {
-        Logger.debug('Creating schema version 0');
+        Logger.info('Creating schema version 0');
         await db.execute(
             r'CREATE TABLE classrooms(id TEXT NOT NULL PRIMARY KEY, name TEXT NOT NULL, description TEXT, year INTEGER NOT NULL, deleted INTEGER NOT NULL DEFAULT 0)');
         await db.execute(r'CREATE INDEX classrooms_deletedIdx ON classrooms (deleted)');
@@ -54,7 +54,7 @@ class DatabaseHolder {
     String version = maps.first['value'];
 
     if ('0' == version) {
-      Logger.debug('Updating schema to version 1');
+      Logger.info('Updating schema to version 1');
       await db.execute(
           r'CREATE TABLE meetings(id TEXT NOT NULL PRIMARY KEY, at TEXT NOT NULL, subject TEXT, studentId TEXT NOT NULL, deleted INTEGER NOT NULL DEFAULT 0)');
       await db.execute(r'CREATE INDEX meetings_deletedIdx ON meetings (deleted)');
