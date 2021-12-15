@@ -13,6 +13,7 @@ Desktop application for **Windows**, **macOS**, and Linux (unofficial support).
 - Compose and edit student observations 
 - Manage categories of observations with predefined templates 
 - Group students into classes
+- Track and log consultation hours
 - Rich text editor
 - Printing 
 - Autosave
@@ -53,20 +54,20 @@ Follow the installation instructions for your platform:
 
 ### On Windows 
 
-1. [Download the archive](https://github.com/ttulka/observations/releases/download/alpha-0.1.1/observations-windows-alpha-0.1.1.zip)
+1. [Download the archive](https://github.com/ttulka/observations/releases/download/alpha-0.2.0/observations-windows-alpha-0.2.0.zip)
 2. Unpack it into any directory (e.g. `C:\Users\<user>\`)
 3. Open the directory and run the `observations.exe` executable
 4. (optional) Create a shortcut of the `observation.exe` file and copy it to the Desktop
 
 ### On Mac
 
-1. [Download the installer package](https://github.com/ttulka/observations/releases/download/alpha-0.1.1/StudentObservations-Installer-macos-alpha-0.1.1.dmg)
+1. [Download the installer package](https://github.com/ttulka/observations/releases/download/alpha-0.2.0/StudentObservations-Installer-macos-alpha-0.2.0.dmg)
 2. Open the installer and move the app into the Applications
 3. Run the app from the Applications
 
 ### On Linux (Ubuntu)
 
-1. [Download the archive](https://github.com/ttulka/observations/releases/download/alpha-0.1.1/observations-linux-alpha-0.1.1.zip)
+1. [Download the archive](https://github.com/ttulka/observations/releases/download/alpha-0.2.0/observations-linux-alpha-0.2.0.zip)
 2. Unpack it into any directory
 3. Open the directory and run the `observations` executable
 
